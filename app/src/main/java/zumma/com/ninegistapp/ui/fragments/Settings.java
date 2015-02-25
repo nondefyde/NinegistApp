@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import zumma.com.ninegistapp.R;
 import zumma.com.ninegistapp.custom.CustomFragment;
@@ -15,14 +14,14 @@ public class Settings extends CustomFragment {
     private View current;
 
     public void onClick(View paramView) {
-        switch (paramView.getId()){
+/*        switch (paramView.getId()){
             case R.id.edit_profile:
-                //openSelectPicture();
+                openSelectPicture();
                 break;
             default:
                 Toast.makeText(getActivity(), "Default", Toast.LENGTH_SHORT).show();
                 break;
-        }
+        }*/
 //        super.onClick(paramView);
 //        int i = 0;
 //        if ((paramView.getId() == R.id.themeGray) || (paramView.getId() == R.id.themeWhite) || (paramView.getId() == R.id.themeRed)) {

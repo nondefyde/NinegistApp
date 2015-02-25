@@ -43,7 +43,7 @@ public class SelectPicture extends Activity implements View.OnClickListener {
     private Uri cameraUri;
     private boolean isCamera;
     private ImageView imageView;
-    private ImageView testView;
+//    private ImageView testView;
     private File imageFile;
     private boolean imageSelected = false;
     private Firebase firebase;
@@ -57,7 +57,7 @@ public class SelectPicture extends Activity implements View.OnClickListener {
         findViewById(R.id.picture_button_cancel).setOnClickListener(this);
         findViewById(R.id.pic_image_button).setOnClickListener(this);
         imageView = (ImageView) findViewById(R.id.picture_image);
-        testView = (ImageView) findViewById(R.id.test_view);
+//        testView = (ImageView) findViewById(R.id.test_view);
         setUpImageFile();
         initImage();
     }
@@ -82,8 +82,8 @@ public class SelectPicture extends Activity implements View.OnClickListener {
                 Bitmap byteImage = BitmapFactory.decodeByteArray(decodedImage, 0, decodedImage.length);
                 if (byteImage != null) {
                     //Uri.fromFile(new File(getCacheDir(), "cropped"))
-                    testView.setImageDrawable(null);
-                    testView.setImageBitmap(byteImage);
+//                    testView.setImageDrawable(null);
+//                    testView.setImageBitmap(byteImage);
                 }
             }
 

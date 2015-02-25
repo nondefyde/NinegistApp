@@ -140,18 +140,16 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/textview_list"
-            android:clickable="true"
             android:padding="@dimen/pad_10dp">
 
             <TextView
                 android:id="@+id/edit_profile"
                 style="@style/lbl_setting1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:text="@string/edit_profile"
-                android:clickable="true" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:background="@drawable/textview_list"
+                android:text="@string/edit_profile" />
         </LinearLayout>
 
         <LinearLayout

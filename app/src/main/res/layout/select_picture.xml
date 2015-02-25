@@ -72,14 +72,14 @@
                 android:layout_height="100dip" />
 
         </LinearLayout>
-        <ImageView
-            android:layout_width="@dimen/pad_310dp"
-            android:layout_height="@dimen/pad_350dp"
-            android:layout_marginTop="@dimen/pad_10dp"
-            android:contentDescription="@string/profile_image"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/test_view"
-            android:src="@drawable/ic_placeholder_image" />
+        <!--<ImageView-->
+            <!--android:layout_width="@dimen/pad_310dp"-->
+            <!--android:layout_height="@dimen/pad_350dp"-->
+            <!--android:layout_marginTop="@dimen/pad_10dp"-->
+            <!--android:contentDescription="@string/profile_image"-->
+            <!--android:layout_alignParentTop="true"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:id="@+id/test_view"-->
+            <!--android:src="@drawable/ic_placeholder_image" />-->
     </LinearLayout>
 </ScrollView>
