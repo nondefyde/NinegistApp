@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="@dimen/pad_5dp">
 
@@ -26,13 +26,13 @@
             <TextView
                 android:id="@id/textView1"
                 style="@style/lbl_setting1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:text="@string/net_status" />
 
             <TextView
-                android:id="@id/textView1"
+                android:id="@+id/network_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/connected"
@@ -48,14 +48,13 @@
             <TextView
                 android:id="@id/textView1"
                 style="@style/lbl_setting1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:text="@string/notification" />
 
             <Switch
                 android:id="@+id/switch1"
-                style="@style/custom_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true" />
@@ -69,14 +68,13 @@
             <TextView
                 android:id="@id/textView1"
                 style="@style/lbl_setting1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:text="@string/save_gal" />
 
             <Switch
                 android:id="@+id/switch2"
-                style="@style/custom_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
@@ -89,7 +87,7 @@
             <TextView
                 android:id="@id/textView1"
                 style="@style/lbl_setting1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:text="@string/chat_setting" />
@@ -103,33 +101,33 @@
             <TextView
                 android:id="@id/textView1"
                 style="@style/lbl_setting1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:text="@string/col_theme" />
 
-            <Button
-                android:id="@+id/themeRed"
-                style="@style/btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/btn_theme_red" />
+                <Button
+                    android:id="@+id/themeRed"
+                    style="@style/btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_theme_red" />
 
-            <Button
-                android:id="@+id/themeWhite"
-                style="@style/btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/pad_10dp"
-                android:layout_marginRight="@dimen/pad_10dp"
-                android:background="@drawable/btn_theme_white" />
+                <Button
+                    android:id="@+id/themeWhite"
+                    style="@style/btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/pad_10dp"
+                    android:layout_marginRight="@dimen/pad_10dp"
+                    android:background="@drawable/btn_theme_white" />
 
-            <Button
-                android:id="@+id/themeGray"
-                style="@style/btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/btn_theme_gray" />
+                <Button
+                    android:id="@+id/themeGray"
+                    style="@style/btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_theme_gray" />
         </LinearLayout>
 
         <TextView
@@ -142,12 +140,29 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/textview_list"
+            android:clickable="true"
+            android:padding="@dimen/pad_10dp">
+
+            <TextView
+                android:id="@+id/edit_profile"
+                style="@style/lbl_setting1"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:text="@string/edit_profile"
+                android:clickable="true" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:padding="@dimen/pad_10dp">
 
             <TextView
                 android:id="@id/textView1"
                 style="@style/lbl_setting1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:text="@string/about" />
@@ -161,7 +176,7 @@
             <TextView
                 android:id="@id/textView1"
                 style="@style/lbl_setting1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:text="@string/tell_frnd" />
@@ -175,7 +190,7 @@
             <TextView
                 android:id="@id/textView1"
                 style="@style/lbl_setting1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:text="@string/restore_def" />
