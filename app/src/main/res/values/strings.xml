@@ -91,5 +91,10 @@
     <string name="agreement"></string>
     <string name="verify">Verify that %s is your correct mobile Number</string>
     <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_select_picture">Select Picture</string>
+    <string name="profile_image">Profile Image</string>
+    <string name="upload_button">Select Button</string>
+    <string name="edit_profile">Profile</string>
+    <string name="label_picture">Select Picture</string>
 
 </resources>

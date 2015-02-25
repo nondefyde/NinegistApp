@@ -74,12 +74,18 @@
             android:enabled="true"
             android:exported="true" >
         </service>
-
         <service
             android:name=".service.DataService"
             android:enabled="true"
             android:exported="true" >
         </service>
+
+        <activity
+            android:name=".ui.activities.SelectPicture"
+            android:label="@string/title_activity_select_picture" >
+        </activity>
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" >
+        </activity>
     </application>
 
 </manifest>
