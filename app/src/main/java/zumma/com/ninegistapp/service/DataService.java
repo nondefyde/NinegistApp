@@ -3,27 +3,31 @@ package zumma.com.ninegistapp.service;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.HandlerThread;
+import android.database.Cursor;
 import android.os.IBinder;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
+
+import zumma.com.ninegistapp.ParseConstants;
+import zumma.com.ninegistapp.database.table.ChatTable;
+import zumma.com.ninegistapp.database.table.FriendTable;
 import zumma.com.ninegistapp.service.listeners.ChatListeners;
 import zumma.com.ninegistapp.service.listeners.FriendListener;
 
 public class DataService extends Service {
 
     private static final String TAG = DataService.class.getSimpleName();
-
+    SharedPreferences preferences;
     private FriendListener friendListener;
     private ChatListeners chatListener;
-
     private ParseUser mCurrentUser;
-
+    private Firebase chatFirebase;
     private String user_id;
-
-    SharedPreferences preferences;
+    private ArrayList<String> frList;
 
     public DataService() {
     }
@@ -44,30 +48,61 @@ public class DataService extends Service {
         mCurrentUser = ParseUser.getCurrentUser();
         user_id = mCurrentUser.getObjectId();
 
+        chatFirebase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(user_id).child("chats");
+        chatFirebase.addChildEventListener(chatListener);
 //
-//        Firebase mFirebaseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist/").child(user_id).child("friends");
-//        mFirebaseRef.addValueEventListener(friendListener);
-//
-//        Firebase cFirebaseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist/").child(user_id).child("chats");
-//        cFirebaseRef.addChildEventListener(chatListener);
+//        if (frList.size() > 0){
+//            for(String friendId : frList){
+//                Firebase mFirebaseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(friendId);
+//                mFirebaseRef.addValueEventListener(friendListener);
+//                Log.d(TAG," PATH : "+ mFirebaseRef.getPath().toString());
+//            }
+//        }
 
         return START_STICKY;
     }
+
 
     @Override
     public void onCreate() {
         Toast.makeText(this, "service started", Toast.LENGTH_LONG).show();
 
-        HandlerThread thread = new HandlerThread("ServiceStartArguments",
-                android.os.Process.THREAD_PRIORITY_BACKGROUND);
-        thread.start();
-
+        frList = getChatUser();
     }
 
     @Override
     public void onDestroy() {
         Toast.makeText(this, "service done", Toast.LENGTH_LONG).show();
+//
+//        if (frList.size() > 0){
+//            for(String userId : frList){
+//                Firebase mFirebaseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist/").child(userId);
+//                mFirebaseRef.removeEventListener(chatListener);
+//            }
+//        }
+
+        chatFirebase.removeEventListener(chatListener);
     }
 
+
+    public ArrayList getChatUser() {
+
+        ArrayList<String> users = new ArrayList<String>();
+
+        Cursor cursor = getContentResolver().query(FriendTable.CONTENT_URI, null, null, null, null);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            int indexID = cursor.getColumnIndex(ChatTable.COLUMN_ID);
+            cursor.moveToFirst();
+            do {
+                String id = cursor.getString(indexID);
+                users.add(id);
+
+            } while (cursor.moveToNext());
+        }
+
+
+        return users;
+    }
 
 }

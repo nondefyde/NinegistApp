@@ -77,20 +77,20 @@ public class Conversation {
         return this.date;
     }
 
-    public String getMsg() {
-        return this.msg;
-    }
-
-    public boolean isSent() {
-        return this.isSent;
-    }
-
     public void setDate(String paramString) {
         this.date = paramString;
     }
 
+    public String getMsg() {
+        return this.msg;
+    }
+
     public void setMsg(String paramString) {
         this.msg = paramString;
+    }
+
+    public boolean isSent() {
+        return this.isSent;
     }
 
     public void setSent(boolean paramBoolean) {
@@ -113,9 +113,6 @@ public class Conversation {
         this.toId = toId;
     }
 
-    public void save(){
-
-    }
 
     @Override
     public String toString() {
@@ -128,6 +125,7 @@ public class Conversation {
                 ", pflag=" + pflag +
                 ", report=" + report +
                 ", created_at=" + created_at +
+                ", uniqkey=" + uniqkey +
                 '}';
     }
 }

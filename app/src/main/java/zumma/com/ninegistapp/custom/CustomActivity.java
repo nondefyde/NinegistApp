@@ -3,7 +3,6 @@ package zumma.com.ninegistapp.custom;
 import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,12 +18,10 @@ public class CustomActivity extends FragmentActivity
     private static final String TAG = CustomActivity.class.getSimpleName();
 
     public void onClick(View paramView) {
-        Log.d(TAG, "am at onClick");
     }
 
     protected void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
-        Log.d(TAG, "am at onCreate");
         setupActionBar();
     }
 
@@ -47,9 +44,7 @@ public class CustomActivity extends FragmentActivity
 
     public View setTouchNClick(int paramInt) {
         View localView = setClick(paramInt);
-        Log.d(TAG, "am at setTouchNClick1");
         localView.setOnTouchListener(TOUCH);
-        Log.d(TAG, "am at setTouchNClick2");
         return localView;
     }
 

@@ -63,28 +63,22 @@ public class MainActivity extends CustomActivity
 {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    SharedPreferences preferences;
     /** The drawer layout. */
     private DrawerLayout drawerLayout;
-
     /** ListView for left side drawer. */
     private ListView drawerLeft;
-
     /** ListView for right side drawer. */
     private ListView drawerRight;
-
     /** The drawer toggle. */
     private ActionBarDrawerToggle drawerToggle;
-
     /** The left navigation list adapter. */
     private LeftNavAdapter adapter;
-
-    private Menu menu;
 
     /* (non-Javadoc)
      * @see com.newsfeeder.custom.CustomActivity#onCreate(android.os.Bundle)
      */
-
-    SharedPreferences preferences;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -142,7 +136,6 @@ public class MainActivity extends CustomActivity
      */
     private void setupLeftNavDrawer()
     {
-        Log.d(TAG, "am setupLeftNavDrawer");
 
         drawerLeft = (ListView) findViewById(R.id.left_drawer);
 
@@ -159,9 +152,11 @@ public class MainActivity extends CustomActivity
             public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
                                     long arg3)
             {
+                Log.d(TAG, "am Position " + pos);
+
                 drawerLayout.closeDrawers();
                 if (pos != 0)
-                    launchFragment(pos - 1, null);
+                    launchFragment(pos, null);
                 else
                     launchFragment(-2, null);
 
@@ -254,7 +249,6 @@ public class MainActivity extends CustomActivity
         {
             title = "Home";
             Log.d(TAG, "am MainFrag Launch");
-//            f = new MainFragment();
             f = new FriendsFragment();
 
         }
@@ -269,13 +263,14 @@ public class MainActivity extends CustomActivity
         }
         else if (pos == 2)
         {
-            title = "Find Match";
-            f = new FindMatch();
+            title = "Settings";
+            f = new Settings();
+
         }
         else if (pos == 3)
         {
-            title = "Settings";
-            f = new Settings();
+            title = "Find Match";
+            f = new FindMatch();
         }
 
         if (f != null)

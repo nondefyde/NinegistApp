@@ -14,6 +14,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ import android.widget.TextView;
 import com.firebase.client.Firebase;
 import com.parse.ParseUser;
 
+import java.util.Date;
 import java.util.Locale;
 
 import zumma.com.ninegistapp.MainActivity;
@@ -48,23 +50,38 @@ public class FriendsFragment extends CustomFragment implements
         LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener, SearchView.OnCloseListener{
 
     private static final String TAG = FriendsFragment.class.getSimpleName();
-    private ProgressBar progressBar;
-
     // Bundle key for saving previously selected search result item
     private static final String STATE_PREVIOUSLY_SELECTED_KEY =
             "com.zumacomm.ngapp.ui.SELECTED_ITEM";
+    protected AdapterView.OnItemClickListener mOnItemClickedListener = new AdapterView.OnItemClickListener() {
 
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            final Cursor cursor = mAdapter.getCursor();
+
+            // Moves to the Cursor row corresponding to the ListView item that was clicked
+            cursor.moveToPosition(position);
+
+            final String objectId = cursor.getString(FriendQuery.COLUMN_ID);
+            final String username = cursor.getString(FriendQuery.COLUMN_USERNAME);
+            final String phone_number = cursor.getString(FriendQuery.COLUMN_PHONE_NUMBER);
+
+            MainActivity mainActivity = (MainActivity) getActivity();
+
+            Bundle bundle = new Bundle();
+            bundle.putString(ParseConstants.KEY_USER_ID, objectId);
+            bundle.putString(ParseConstants.ACTION_BAR_TITLE, "Chat with " + username);
+            mainActivity.launchFragment(1, bundle);
+        }
+    };
+    private ProgressBar progressBar;
     private ParseUser mCurrentUser;
-
     private ContactsAdapter mAdapter; // The main query adapter
     private int mPreviouslySelectedSearchItem = 0;
-
     private SharedPreferences preferences;
     private SearchView mSearchView;
     private String mCurFilter;
-
     private MenuItem sendMenu;
-
     private ListView listView;
     private String userId;
 
@@ -105,28 +122,6 @@ public class FriendsFragment extends CustomFragment implements
 
 
     }
-
-    protected AdapterView.OnItemClickListener mOnItemClickedListener = new AdapterView.OnItemClickListener(){
-
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            final Cursor cursor = mAdapter.getCursor();
-
-            // Moves to the Cursor row corresponding to the ListView item that was clicked
-            cursor.moveToPosition(position);
-
-            final String objectId = cursor.getString(FriendQuery.COLUMN_ID);
-            final String username = cursor.getString(FriendQuery.COLUMN_USERNAME);
-            final String phone_number = cursor.getString(FriendQuery.COLUMN_PHONE_NUMBER);
-
-            MainActivity mainActivity = (MainActivity) getActivity();
-
-            Bundle bundle = new Bundle();
-            bundle.putString(ParseConstants.KEY_USER_ID,objectId);
-            bundle.putString(ParseConstants.ACTION_BAR_TITLE, "Chat with "+username);
-            mainActivity.launchFragment(1,bundle);
-        }
-    };
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -186,20 +181,6 @@ public class FriendsFragment extends CustomFragment implements
         return true;
     }
 
-    public static class MySearchView extends SearchView {
-        public MySearchView(Context context) {
-            super(context);
-        }
-
-        // The normal SearchView doesn't clear its search text when
-        // collapsed, so we will do this for it.
-        @Override
-        public void onActionViewCollapsed() {
-            setQuery("", false);
-            super.onActionViewCollapsed();
-        }
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Place an action bar item for searching.
@@ -213,10 +194,10 @@ public class FriendsFragment extends CustomFragment implements
         mSearchView.setQueryHint("Type something...");
         int searchPlateId = mSearchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
         View searchPlate = mSearchView.findViewById(searchPlateId);
-        if (searchPlate!=null) {
+        if (searchPlate != null) {
             int searchTextId = searchPlate.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
             TextView searchText = (TextView) searchPlate.findViewById(searchTextId);
-            if (searchText!=null) {
+            if (searchText != null) {
                 searchText.setTextColor(Color.WHITE);
                 searchText.setHintTextColor(Color.GREEN);
             }
@@ -224,8 +205,6 @@ public class FriendsFragment extends CustomFragment implements
 
         item.setActionView(mSearchView);
     }
-
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -244,7 +223,7 @@ public class FriendsFragment extends CustomFragment implements
                 contentUri =
                         Uri.withAppendedPath(FriendQuery.CONTENT_URI, Uri.encode(mCurFilter));
             }
-            Log.d(TAG, " content uri " +contentUri.toString()+"   fileter "+mCurFilter);
+            Log.d(TAG, " content uri " + contentUri.toString() + "   fileter " + mCurFilter);
 
             mCurrentUser = ParseUser.getCurrentUser();
             String userId = mCurrentUser.getObjectId();
@@ -265,8 +244,8 @@ public class FriendsFragment extends CustomFragment implements
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (loader.getId() == FriendQuery.QUERY_ID) {
-            Log.d(TAG, "data = "+data);
-            if (data != null){
+            Log.d(TAG, "data = " + data);
+            if (data != null) {
                 mAdapter.swapCursor(data);
             }
         }
@@ -281,13 +260,59 @@ public class FriendsFragment extends CustomFragment implements
         }
     }
 
+    public interface FriendQuery {
+        // An identifier for the loader
+        final static int QUERY_ID = ParseConstants.FRIEND_QUERY_ID;
+        final static Uri CONTENT_URI = FriendTable.CONTENT_URI;
+        final static String SELECTION = FriendTable.COLUMN_USER_ID + "=?";
+
+        final static String[] PROJECTION = {
+                FriendTable.COLUMN_ID,
+                FriendTable.COLUMN_USERNAME,
+                FriendTable.COLUMN_PHONE_NUMBER,
+                FriendTable.COLUMN_MSG_COUNT,
+                FriendTable.COLUMN_STATUS,
+                FriendTable.COLUMN_STATUS_ICON,
+                FriendTable.COLUMN_PROFILE_PICTURE,
+                FriendTable.COLUMN_LAST_CHAT_TIME,
+                FriendTable.COLUMN_UPDATED_AT,
+        };
+
+        // The query column numbers which map to each value in the projection
+        final static int COLUMN_ID = 0;
+        final static int COLUMN_USERNAME = 1;
+        final static int COLUMN_PHONE_NUMBER = 2;
+        final static int COLUMN_MSG_COUNT = 3;
+        final static int COLUMN_STATUS = 4;
+        final static int COLUMN_STATUS_ICON = 5;
+        final static int COLUMN_PROFILE_PICTURE = 6;
+        final static int COLUMN_LAST_CHAT_TIME = 7;
+        final static int COLUMN_UPDATED_AT = 8;
+    }
+
+    public static class MySearchView extends SearchView {
+        public MySearchView(Context context) {
+            super(context);
+        }
+
+        // The normal SearchView doesn't clear its search text when
+        // collapsed, so we will do this for it.
+        @Override
+        public void onActionViewCollapsed() {
+            setQuery("", false);
+            super.onActionViewCollapsed();
+        }
+    }
+
     private class ContactsAdapter extends CursorAdapter implements SectionIndexer {
         private LayoutInflater mInflater; // Stores the layout inflater
         private AlphabetIndexer mAlphabetIndexer; // Stores the AlphabetIndexer instance
         private TextAppearanceSpan highlightTextSpan; // Stores the highlight text appearance style
         private FriendsUtilHelper friendsUtilHelper;
+
         /**
          * Instantiates a new Contacts Adapter.
+         *
          * @param context A context that has access to the app's layout.
          */
         public ContactsAdapter(Context context) {
@@ -374,10 +399,31 @@ public class FriendsFragment extends CustomFragment implements
 
             String name = friendsUtilHelper.capitaliseFirst(username);
 
+            if (msg_count > 0) {
+                viewHolder.countLabel.setVisibility(View.VISIBLE);
+                viewHolder.countLabel.setText(msg_count + "");
+                viewHolder.statusLabel.setText(status);
+            } else {
+                viewHolder.countLabel.setVisibility(View.INVISIBLE);
+            }
 
-//
-//            viewHolder.nameIcon.setBackgroundColor(color);
-//            viewHolder.nameIcon.setText(name.substring(0,1));
+            switch (status_icon) {
+                case 1:
+                    viewHolder.statusIcon.setImageResource(R.drawable.ic_chat_icon);
+                    break;
+                default:
+                    viewHolder.statusIcon.setImageResource(R.drawable.ic_dot1);
+            }
+
+            Long updateAt = Long.parseLong(updated_at);
+            long now = new Date().getTime();
+            String convertedDate = DateUtils.getRelativeTimeSpanString(
+                    updateAt + 1000,
+                    now,
+                    DateUtils.SECOND_IN_MILLIS
+            ).toString();
+
+            viewHolder.timeLabel.setText(convertedDate);
 
             if (startIndex == -1) {
                 // If the user didn't do a search, or the search string didn't match a display
@@ -483,35 +529,5 @@ public class FriendsFragment extends CustomFragment implements
             TextView countLabel;
             ImageView statusIcon;
         }
-    }
-
-    public interface FriendQuery {
-        // An identifier for the loader
-        final static int QUERY_ID = ParseConstants.FRIEND_QUERY_ID;
-        final static Uri CONTENT_URI = FriendTable.CONTENT_URI;
-        final static String SELECTION = FriendTable.COLUMN_USER_ID + "=?";
-
-        final static String[] PROJECTION = {
-                FriendTable.COLUMN_ID,
-                FriendTable.COLUMN_USERNAME,
-                FriendTable.COLUMN_PHONE_NUMBER,
-                FriendTable.COLUMN_MSG_COUNT,
-                FriendTable.COLUMN_STATUS,
-                FriendTable.COLUMN_STATUS_ICON,
-                FriendTable.COLUMN_PROFILE_PICTURE,
-                FriendTable.COLUMN_LAST_CHAT_TIME,
-                FriendTable.COLUMN_UPDATED_AT,
-        };
-
-        // The query column numbers which map to each value in the projection
-        final static int COLUMN_ID = 0;
-        final static int COLUMN_USERNAME = 1;
-        final static int COLUMN_PHONE_NUMBER = 2;
-        final static int COLUMN_MSG_COUNT = 3;
-        final static int COLUMN_STATUS = 4;
-        final static int COLUMN_STATUS_ICON = 5;
-        final static int COLUMN_PROFILE_PICTURE = 6;
-        final static int COLUMN_LAST_CHAT_TIME = 7;
-        final static int COLUMN_UPDATED_AT = 8;
     }
 }

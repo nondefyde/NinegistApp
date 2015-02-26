@@ -25,20 +25,15 @@ import zumma.com.ninegistapp.ui.listeners.UserChatListeners;
 public class ChatFragment extends CustomFragment {
 
 
+    private static final String TAG = ChatFragment.class.getSimpleName();
     private ChatAdapter adp;
     private ChatArrayList convList;
     private EditText txt;
-
     private String user_id;
-
     private UserChatListeners userChatListeners;
     private MyChatListener myChatListener;
-
     private Firebase listnerBase;
     private Firebase mlistnerBase;
-
-    private static final String TAG = ChatFragment.class.getSimpleName();
-
     private String friend_id;
 
     public ChatAdapter getAdp() {
@@ -56,7 +51,6 @@ public class ChatFragment extends CustomFragment {
         user_id = ParseUser.getCurrentUser().getObjectId();
 
         this.convList = new ChatArrayList(getActivity(), friend_id);
-
         this.adp = new ChatAdapter(getActivity(),convList);
 
         listnerBase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(user_id).child("chats").child(friend_id);
@@ -103,29 +97,6 @@ public class ChatFragment extends CustomFragment {
                 }
             }
         });
-
-//        uFirebaseRef.push().setValue(conversation, new Firebase.CompletionListener() {
-//
-//            @Override
-//            public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-//                if (firebaseError == null) {
-//                    Log.d(TAG, " CHAT SAVED  " + firebase.getKey());
-//                    conversation.setUniqkey(firebase.getKey());
-//                    conversation.setReport(1);
-//                    cFirebaseRef.push().setValue(conversation);
-//                    uFirebaseRef.child(firebase.getKey()).setValue(conversation, new Firebase.CompletionListener() {
-//                        @Override
-//                        public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-//                            conversation.setReport(1);
-//                            Log.d(TAG, conversation.toString());
-//                            convList.upDateDeliveredConversation(conversation);
-//                            adp.notifyDataSetChanged();
-//
-//                        }
-//                    });
-//                }
-//            }
-//        });
 
         Log.d(TAG, conversation.toString());
         convList.addNewChat(conversation);
