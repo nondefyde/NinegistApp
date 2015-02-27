@@ -24,12 +24,17 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.parse.ParseUser;
 import com.soundcloud.android.crop.Crop;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import zumma.com.ninegistapp.MainActivity;
 import zumma.com.ninegistapp.ParseConstants;
 import zumma.com.ninegistapp.R;
 import zumma.com.ninegistapp.utils.FileHelper;
@@ -41,7 +46,6 @@ public class SelectPicture extends Activity implements View.OnClickListener {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private Uri outputCropUri;
     private Uri cameraUri;
-    private boolean isCamera;
     private ImageView imageView;
 //    private ImageView testView;
     private File imageFile;
@@ -52,7 +56,7 @@ public class SelectPicture extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_picture);
-        firebase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child("BvYGVZYoPb").child("basicInfo").child("picture");
+        firebase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(ParseUser.getCurrentUser().getObjectId()).child("basicInfo").child("picture");
         findViewById(R.id.picure_button_ok).setOnClickListener(this);
         findViewById(R.id.picture_button_cancel).setOnClickListener(this);
         findViewById(R.id.pic_image_button).setOnClickListener(this);
@@ -135,9 +139,7 @@ public class SelectPicture extends Activity implements View.OnClickListener {
     }
 
     private void cancelUpdate(){
-        Intent intent = new Intent(SelectPicture.this, HomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        Intent intent = new Intent(SelectPicture.this, MainActivity.class);
         startActivity(intent);
     }
 
@@ -184,9 +186,11 @@ public class SelectPicture extends Activity implements View.OnClickListener {
                 public void onComplete(FirebaseError firebaseError, Firebase firebase) {
                     if (firebaseError != null) {
                         Log.d(TAG, "Data could not be saved. " + firebaseError.getMessage());
+
                     } else {
                         Log.d(TAG, "Inside else of onComplete ");
-                        setUpPicture();
+                        Intent intent = new Intent(SelectPicture.this, MainActivity.class);
+                        startActivity(intent);
                     }
                 }
             });
@@ -219,6 +223,7 @@ public class SelectPicture extends Activity implements View.OnClickListener {
         outputCropUri = Uri.fromFile(imageFile); //Uri.fromFile(new File(getCacheDir(), "cropped"));
         switch (requestCode){
             case REQUEST_IMAGE_CAPTURE:
+                boolean isCamera;
                 if(resultCode == RESULT_OK) {
                     if (data == null) {
                         isCamera = true;
@@ -263,9 +268,25 @@ public class SelectPicture extends Activity implements View.OnClickListener {
 //                .fit()
 //                .centerCrop()
 //                .into(imageView);
-        imageView.setImageDrawable(null);
-        imageView.setImageURI(outputCropUri);
-        imageSelected = true;
-        Log.d(TAG, getContentResolver().getType(outputCropUri)+" is it not null?");
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), outputCropUri);
+            OutputStream os = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, os);
+            outputCropUri = Uri.fromFile(imageFile);
+            os.flush();
+            os.close();
+            //imageView.setImageDrawable(null);
+            Picasso.with(SelectPicture.this)
+                .load(outputCropUri)
+                .placeholder(R.drawable.ic_contact_picture_180_holo_light)
+                .fit()
+                .centerCrop()
+                .skipMemoryCache()
+                .into(imageView);
+            imageSelected = true;
+        } catch(Exception e) {
+            Log.d(TAG, "Exception Occurred! - "+ e.getMessage());
+        }
     }
+
 }

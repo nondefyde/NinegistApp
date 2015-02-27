@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
@@ -22,13 +24,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.parse.ParseUser;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +43,7 @@ import java.util.Set;
 import zumma.com.ninegistapp.custom.CustomActivity;
 import zumma.com.ninegistapp.database.table.FriendTable;
 import zumma.com.ninegistapp.model.BasicInfo;
+import zumma.com.ninegistapp.model.CircleTransform;
 import zumma.com.ninegistapp.model.Conversation;
 import zumma.com.ninegistapp.model.Data;
 import zumma.com.ninegistapp.model.Friend;
@@ -74,6 +80,7 @@ public class MainActivity extends CustomActivity
     private ActionBarDrawerToggle drawerToggle;
     /** The left navigation list adapter. */
     private LeftNavAdapter adapter;
+    private ImageView iView;
 
     /* (non-Javadoc)
      * @see com.newsfeeder.custom.CustomActivity#onCreate(android.os.Bundle)
@@ -141,6 +148,8 @@ public class MainActivity extends CustomActivity
 
         View header = getLayoutInflater().inflate(R.layout.left_nav_header,
                 null);
+        iView = (ImageView) header.findViewById(R.id.main_profile_image);
+        setUpHeaderImage();
         drawerLeft.addHeaderView(header);
 
         adapter = new LeftNavAdapter(this, getResources().getStringArray(
@@ -163,6 +172,28 @@ public class MainActivity extends CustomActivity
             }
         });
 
+    }
+
+    private void setUpHeaderImage(){
+        final File root = new File(Environment.getExternalStorageDirectory() + File.separator + "9NineGist" + File.separator);
+        if(root.exists()){
+            String imageFileName = "JPEG_" + "picture" + ".jpg";
+            File imageFile = new File(root, imageFileName);
+            if(imageFile.exists()){
+                iView.setImageDrawable(null);
+                Uri uri = Uri.fromFile(imageFile);
+                Picasso.with(MainActivity.this)
+                        .load(uri)
+                        .resize(getResources().getInteger(R.integer.profile_width), getResources().getInteger(R.integer.profile_height))
+                        .transform(new CircleTransform())
+                        .placeholder(R.drawable.ic_contact_picture_180_holo_light)
+                        .skipMemoryCache()
+                        .into(iView);
+            }
+        }
+        else{
+            return;
+        }
     }
 
     /**
