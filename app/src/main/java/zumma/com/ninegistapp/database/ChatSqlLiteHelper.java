@@ -13,7 +13,7 @@ import zumma.com.ninegistapp.database.table.FriendTable;
  */
 public class ChatSqlLiteHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "kmp.db";
+    private static final String DATABASE_NAME = "abcdef.db";
     private static final int DATABASE_VERSION = 1;
 
     public ChatSqlLiteHelper(Context context) {

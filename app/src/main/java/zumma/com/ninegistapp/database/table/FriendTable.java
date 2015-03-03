@@ -45,7 +45,7 @@ public class FriendTable {
             + COLUMN_COUNTRY_CODE + " TEXT,"
             + COLUMN_COUNTRY_NAME + " TEXT,"
             + COLUMN_MSG_COUNT + " INTEGER,"
-            + COLUMN_STATUS + " TEXT,"
+            + COLUMN_STATUS + " TEXT DEFAULT 'Hi, am a 9gist user',"
             + COLUMN_STATUS_ICON + " INTEGER,"
             + COLUMN_PROFILE_PICTURE + " BLOB,"
             + COLUMN_LOCKED + " INTEGER,"

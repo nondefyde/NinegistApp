@@ -408,8 +408,20 @@ public class FriendsFragment extends CustomFragment implements
             }
 
             switch (status_icon) {
+                case 0:
+                    viewHolder.statusIcon.setImageResource(R.drawable.ic_chat_icon_read);
+                    break;
                 case 1:
                     viewHolder.statusIcon.setImageResource(R.drawable.ic_chat_icon);
+                    break;
+                case 2:
+                    viewHolder.statusIcon.setImageResource(R.drawable.ic_dot1);
+                    break;
+                case 3:
+                    viewHolder.statusIcon.setImageResource(R.drawable.ic_dot2);
+                    break;
+                case 4:
+                    viewHolder.statusIcon.setImageResource(R.drawable.ic_dot3);
                     break;
                 default:
                     viewHolder.statusIcon.setImageResource(R.drawable.ic_dot1);
@@ -418,8 +430,8 @@ public class FriendsFragment extends CustomFragment implements
             Long updateAt = Long.parseLong(updated_at);
             long now = new Date().getTime();
             String convertedDate = DateUtils.getRelativeTimeSpanString(
-                    updateAt + 1000,
-                    now,
+                    updateAt,
+                    now + 1000,
                     DateUtils.SECOND_IN_MILLIS
             ).toString();
 

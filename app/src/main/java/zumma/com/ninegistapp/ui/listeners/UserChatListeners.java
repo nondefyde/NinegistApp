@@ -58,7 +58,7 @@ public class UserChatListeners implements ChildEventListener {
 
                 if (conversation.getReport() != 2){
 
-                    conversations.addNewChat(conversation);
+                    conversations.add(conversation);
                     chatAdapter.notifyDataSetChanged();
 
                     Log.d(TAG, " Conversation " + conversation.toString());

@@ -17,6 +17,7 @@ import zumma.com.ninegistapp.database.table.FriendTable;
 /**
  * Created by Okafor on 19/02/2015.
  */
+
 public class FriendListener implements ValueEventListener {
 
     private Context context;
@@ -30,10 +31,10 @@ public class FriendListener implements ValueEventListener {
     public void onDataChange(DataSnapshot dataSnapshot) {
         Log.d(TAG, " onDataChange DataSnapshot :" +dataSnapshot.getValue());
 
-        HashMap<String,HashMap<String,String>> friendList = dataSnapshot.getValue(HashMap.class);
-        if (friendList != null){
-            upDateFriendTable(friendList);
-        }
+//        HashMap<String,HashMap<String,String>> friendList = dataSnapshot.getValue(HashMap.class);
+//        if (friendList != null){
+//            upDateFriendTable(friendList);
+//        }
 
     }
 

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
@@ -51,14 +52,13 @@ public class DataService extends Service {
         chatFirebase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(user_id).child("chats");
         chatFirebase.addChildEventListener(chatListener);
 //
-//        if (frList.size() > 0){
-//            for(String friendId : frList){
-//                Firebase mFirebaseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(friendId);
-//                mFirebaseRef.addValueEventListener(friendListener);
-//                Log.d(TAG," PATH : "+ mFirebaseRef.getPath().toString());
-//            }
-//        }
-
+        if (frList.size() > 0){
+            for(String friendId : frList){
+                Firebase mFirebaseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(friendId);
+                mFirebaseRef.addValueEventListener(friendListener);
+                Log.d(TAG, " PATH : " + mFirebaseRef.getPath().toString());
+            }
+        }
         return START_STICKY;
     }
 

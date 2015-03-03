@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import zumma.com.ninegistapp.StaticHelpers;
 import zumma.com.ninegistapp.database.table.ChatTable;
 import zumma.com.ninegistapp.model.Conversation;
 
@@ -24,11 +25,9 @@ public class ChatArrayList extends ArrayList<Conversation> {
     public ChatArrayList(Context context, String friend_id) {
         this.context = context;
         this.friend_id = friend_id;
-
-        initChatList();
     }
 
-    public boolean addNewChat(Conversation conversation){
+    public boolean addNew(Conversation conversation){
         saveConversation(conversation);
         return super.add(conversation);
     }
@@ -56,6 +55,15 @@ public class ChatArrayList extends ArrayList<Conversation> {
 
     public void upDateDeliveredConversation(Conversation conversation){
 
+        for (int i = this.size() - 1; i > 0; i-- ){
+            Conversation conver = this.get(i);
+            if (conver.getUniqkey().equals(conversation.getUniqkey()) && conver.getReport() == 1){
+                conver.setReport(1);
+                this.remove(i);
+                this.add(i,conver);
+            }
+        }
+
         String SELECTION = ChatTable.COLUMN_FRIEND_ID + "=? AND "+ChatTable.COLUMN_CREATED_AT +"=?";
         String[] args = {friend_id, conversation.getCreated_at()+""};
 
@@ -71,6 +79,14 @@ public class ChatArrayList extends ArrayList<Conversation> {
 
     public void upDisplayedConversation(Conversation conversation){
 
+        for (int i = this.size() - 1; i > 0; i-- ){
+            Conversation conver = this.get(i);
+            if (conver.getUniqkey().equals(conversation.getUniqkey()) && conver.getReport() == 1){
+                conver.setReport(2);
+                this.remove(i);
+                this.add(i,conver);
+            }
+        }
         String SELECTION = ChatTable.COLUMN_FRIEND_ID + "=? AND "+ChatTable.COLUMN_CREATED_AT +"=?";
         String[] args = {friend_id, conversation.getCreated_at()+""};
 
@@ -81,8 +97,8 @@ public class ChatArrayList extends ArrayList<Conversation> {
         if (update > 0){
             Log.d(TAG, " update displayed happened  "+update);
         }
+        StaticHelpers.upDateFriendListWithInChat(context, conversation, 4);
     }
-
 
     public void initChatList(){
 
@@ -92,7 +108,6 @@ public class ChatArrayList extends ArrayList<Conversation> {
         Cursor cursor = context.getContentResolver().query(ChatTable.CONTENT_URI, null, SELECTION, args,ChatTable.COLUMN_CREATED_AT);
 
         if (cursor != null && cursor.getCount() > 0) {
-
 
             int indexID = cursor.getColumnIndex(ChatTable.COLUMN_ID);
             int indexFrom = cursor.getColumnIndex(ChatTable.COLUMN_FROM);
@@ -104,7 +119,6 @@ public class ChatArrayList extends ArrayList<Conversation> {
             int indexReport = cursor.getColumnIndex(ChatTable.COLUMN_REPORT);
             int indexCreatedAt = cursor.getColumnIndex(ChatTable.COLUMN_CREATED_AT);
             int indexUnique = cursor.getColumnIndex(ChatTable.COLUMN_UNIQ_ID);
-
 
             cursor.moveToFirst();
 
@@ -125,7 +139,7 @@ public class ChatArrayList extends ArrayList<Conversation> {
                 Conversation conversation = new Conversation(fromId,toId,date,sent,msg,flag,report,created,uniq);
 //                Log.d(TAG, conversation.toString() );
 
-                this.add(conversation);
+                add(conversation);
 
             } while (cursor.moveToNext());
         }

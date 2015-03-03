@@ -18,15 +18,17 @@ import zumma.com.ninegistapp.model.Conversation;
 public class ChatAdapter extends BaseAdapter{
 
     private static final String TAG = ChatAdapter.class.getSimpleName();
-    private Context fContext;
+    private Context context;
     private LayoutInflater fInflater;
+    private String friend_id;
 
     private ChatArrayList messages;
 
-    public ChatAdapter(Context aContext, ChatArrayList messages) {
-        fContext = aContext;
+    public ChatAdapter(Context aContext, ChatArrayList messages, String friend_id) {
+        context = aContext;
         this.messages = messages;
-        fInflater = (LayoutInflater) fContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.friend_id = friend_id;
+        fInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     public int getCount() {
@@ -78,6 +80,10 @@ public class ChatAdapter extends BaseAdapter{
         }
         return lView;
     }
+
+
+
+
 
     public ChatArrayList getMessages() {
         return messages;

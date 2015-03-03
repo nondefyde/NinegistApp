@@ -90,7 +90,6 @@ public class MainActivity extends CustomActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        Log.d(TAG, "am at onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupDrawer();
@@ -161,11 +160,12 @@ public class MainActivity extends CustomActivity
             public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
                                     long arg3)
             {
-                Log.d(TAG, "am Position " + pos);
 
                 drawerLayout.closeDrawers();
+
+                Log.d(TAG, "am Position " + pos);
                 if (pos != 0)
-                    launchFragment(pos, null);
+                    launchFragment(pos-1, null);
                 else
                     launchFragment(-2, null);
 
@@ -285,12 +285,10 @@ public class MainActivity extends CustomActivity
         }
         else if (pos == 1)
         {
-            MenuItem item = menu.findItem(R.id.menu_search);
-            Log.d(TAG, "Testing " + item.getTitle());
-            item.setVisible(false);
             title = "Chat";
             f = new ChatFragment();
             f.setArguments(bundle);
+
         }
         else if (pos == 2)
         {
