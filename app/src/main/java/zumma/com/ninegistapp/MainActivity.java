@@ -6,6 +6,7 @@ package zumma.com.ninegistapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
@@ -86,6 +87,7 @@ public class MainActivity extends CustomActivity
      * @see com.newsfeeder.custom.CustomActivity#onCreate(android.os.Bundle)
      */
     private Menu menu;
+    private boolean isChat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -263,7 +265,7 @@ public class MainActivity extends CustomActivity
      */
     public void launchFragment(int pos, Bundle bundle)
     {
-
+        isChat = false;
         Fragment f = null;
         String title = null;
         if (pos == -1)
@@ -285,7 +287,8 @@ public class MainActivity extends CustomActivity
         }
         else if (pos == 1)
         {
-            title = "Chat";
+            title = bundle.getString(ParseConstants.ACTION_BAR_TITLE);
+            isChat = true;
             f = new ChatFragment();
             f.setArguments(bundle);
 
@@ -313,6 +316,8 @@ public class MainActivity extends CustomActivity
                     .commit();
             if (adapter != null && pos >= 0)
                 adapter.setSelection(pos);
+            setActionBarTitle();
+            invalidateOptionsMenu();
         }
     }
 
@@ -324,11 +329,13 @@ public class MainActivity extends CustomActivity
         if (drawerLayout.isDrawerOpen(drawerLeft))
         {
             getActionBar().setTitle("Main Menu");
+            getActionBar().setSubtitle(null);
             return;
         }
         if (drawerLayout.isDrawerOpen(drawerRight))
         {
             getActionBar().setTitle(R.string.all_matches);
+            getActionBar().setSubtitle(null);
             return;
         }
 
@@ -338,6 +345,18 @@ public class MainActivity extends CustomActivity
                 getSupportFragmentManager().getBackStackEntryCount() - 1)
                 .getName();
         getActionBar().setTitle(title);
+        if (isChat)
+        {
+            getActionBar().setSubtitle("Online");
+            getActionBar().setIcon(R.drawable.user1);
+        }
+        else{
+            try {
+                getActionBar().setIcon(getPackageManager().getApplicationIcon("zumma.com.ninegistapp"));
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.d(TAG, "Package Name Not Found");
+            }
+        }
         // getActionBar().setLogo(R.drawable.icon);
     }
 
@@ -379,6 +398,9 @@ public class MainActivity extends CustomActivity
             menu.findItem(R.id.menu_chat).setVisible(false);
         else if (drawerLayout.isDrawerOpen(drawerRight))
             menu.findItem(R.id.menu_edit).setVisible(true);
+        if(isChat){
+            menu.findItem(R.id.menu_search).setVisible(false);
+        }
 
         return true;
     }

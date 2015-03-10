@@ -198,5 +198,6 @@ public class ChatFragment extends CustomFragment {
             }while (cursor.moveToNext());
             cursor.close();
         }
+        cursor.close();
     }
 }
