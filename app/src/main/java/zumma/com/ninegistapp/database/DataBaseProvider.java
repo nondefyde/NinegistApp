@@ -13,7 +13,7 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.List;
 
-import zumma.com.ninegistapp.database.table.ChatTable;
+import zumma.com.ninegistapp.database.table.MessageTable;
 import zumma.com.ninegistapp.database.table.FriendTable;
 
 /**
@@ -58,8 +58,8 @@ public class DataBaseProvider extends ContentProvider {
             newMatcher.addURI(AUTHORITY, FriendTable.TABLE_NAME+"/#", FRIEND_TABLE_SINGLE_ROW_SELECTION);
             newMatcher.addURI(AUTHORITY, FriendTable.TABLE_NAME+"/*", FRIEND_TABLE_SEARCH_FILTER);
 
-            newMatcher.addURI(AUTHORITY, ChatTable.TABLE_NAME, CHAT_TABLE_QUERY_CODE);
-            newMatcher.addURI(AUTHORITY, ChatTable.TABLE_NAME+"/#", CHAT_TABLE_SINGLE_ROW_SELECTION);
+            newMatcher.addURI(AUTHORITY, MessageTable.TABLE_NAME, CHAT_TABLE_QUERY_CODE);
+            newMatcher.addURI(AUTHORITY, MessageTable.TABLE_NAME+"/#", CHAT_TABLE_SINGLE_ROW_SELECTION);
 
             mUriMatcher = newMatcher;
         }
@@ -97,8 +97,8 @@ public class DataBaseProvider extends ContentProvider {
                             FriendTable.sProjectionMap, FriendTable.COLUMN_ID, FriendTable.COLUMN_USERNAME, uri.getLastPathSegment());
                     break;
                 case CHAT_TABLE_QUERY_CODE:
-                    standardQuery(qb, segments, ChatTable.TABLE_NAME,
-                            ChatTable.sProjectionMap, ChatTable.COLUMN_ID);
+                    standardQuery(qb, segments, MessageTable.TABLE_NAME,
+                            MessageTable.sProjectionMap, MessageTable.COLUMN_ID);
                     break;
                 default:
                     throw new UnsupportedOperationException("The URI "
@@ -124,7 +124,7 @@ public class DataBaseProvider extends ContentProvider {
             case FRIEND_TABLE_QUERY_CODE:
                 return FriendTable.CONTENT_TYPE;
             case CHAT_TABLE_QUERY_CODE:
-                return ChatTable.CONTENT_TYPE;
+                return MessageTable.CONTENT_TYPE;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -148,9 +148,9 @@ public class DataBaseProvider extends ContentProvider {
                     baseUri = FriendTable.CONTENT_URI;
                     break;
                 case CHAT_TABLE_QUERY_CODE:
-                    rowId = db.insertWithOnConflict(ChatTable.TABLE_NAME, null,
+                    rowId = db.insertWithOnConflict(MessageTable.TABLE_NAME, null,
                             values, SQLiteDatabase.CONFLICT_REPLACE);
-                    baseUri = ChatTable.CONTENT_URI;
+                    baseUri = MessageTable.CONTENT_URI;
                     break;
                 default:
                     throw new UnsupportedOperationException("The URI "
@@ -183,7 +183,7 @@ public class DataBaseProvider extends ContentProvider {
                             selectionArgs);
                     break;
                 case CHAT_TABLE_QUERY_CODE:
-                    count = db.delete(ChatTable.TABLE_NAME, selection,
+                    count = db.delete(MessageTable.TABLE_NAME, selection,
                             selectionArgs);
                     break;
                 default:
@@ -220,12 +220,12 @@ public class DataBaseProvider extends ContentProvider {
                     count = db.update(FriendTable.TABLE_NAME, values, "_id = ?", new String[]{uri.getLastPathSegment()});
                     break;
                 case CHAT_TABLE_QUERY_CODE:
-                    count = db.updateWithOnConflict(ChatTable.TABLE_NAME, values,
+                    count = db.updateWithOnConflict(MessageTable.TABLE_NAME, values,
                             selection, selectionArgs,
                             SQLiteDatabase.CONFLICT_REPLACE);
                     break;
                 case CHAT_TABLE_SINGLE_ROW_SELECTION:
-                    count = db.update(ChatTable.TABLE_NAME, values, "_id = ?", new String[]{uri.getLastPathSegment()});
+                    count = db.update(MessageTable.TABLE_NAME, values, "_id = ?", new String[]{uri.getLastPathSegment()});
                     break;
                 default:
                     throw new UnsupportedOperationException("The URI "
@@ -258,7 +258,7 @@ public class DataBaseProvider extends ContentProvider {
                             null, SQLiteDatabase.CONFLICT_REPLACE);
                     break;
                 case CHAT_TABLE_QUERY_CODE:
-                    count = standardBulkInsert(db, values, ChatTable.TABLE_NAME,
+                    count = standardBulkInsert(db, values, MessageTable.TABLE_NAME,
                             null, SQLiteDatabase.CONFLICT_REPLACE);
                     break;
                 default:

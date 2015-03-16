@@ -5,8 +5,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,7 +16,6 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.style.TextAppearanceSpan;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,18 +33,9 @@ import android.widget.SearchView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.parse.ParseUser;
-import com.squareup.picasso.Picasso;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Date;
 import java.util.Locale;
 
@@ -56,11 +44,10 @@ import zumma.com.ninegistapp.ParseConstants;
 import zumma.com.ninegistapp.R;
 import zumma.com.ninegistapp.custom.CustomFragment;
 import zumma.com.ninegistapp.database.table.FriendTable;
-import zumma.com.ninegistapp.model.CircleTransform;
 import zumma.com.ninegistapp.ui.helpers.FriendsUtilHelper;
 
 public class FriendsFragment extends CustomFragment implements
-        LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener, SearchView.OnCloseListener{
+        LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener, SearchView.OnCloseListener {
 
     private static final String TAG = FriendsFragment.class.getSimpleName();
     // Bundle key for saving previously selected search result item
@@ -83,7 +70,7 @@ public class FriendsFragment extends CustomFragment implements
 
             Bundle bundle = new Bundle();
             bundle.putString(ParseConstants.KEY_USER_ID, objectId);
-            bundle.putString(ParseConstants.ACTION_BAR_TITLE, /** "Chat with " + */ username);
+            bundle.putString(ParseConstants.ACTION_BAR_TITLE, /** "Chat with " + */username);
             mainActivity.launchFragment(1, bundle);
         }
     };
@@ -150,7 +137,7 @@ public class FriendsFragment extends CustomFragment implements
         // initializing the loader as it will be restarted later when the query is populated into
         // the action bar search view (see onQueryTextChange() in onCreateOptionsMenu()).
         if (mPreviouslySelectedSearchItem == 0) {
-            getLoaderManager().initLoader(FriendQuery.QUERY_ID, null,this);
+            getLoaderManager().initLoader(FriendQuery.QUERY_ID, null, this);
         }
     }
 
@@ -159,7 +146,6 @@ public class FriendsFragment extends CustomFragment implements
         super.onResume();
         Log.d(TAG, "onResume");
     }
-
 
 
     @Override
@@ -440,45 +426,45 @@ public class FriendsFragment extends CustomFragment implements
                     viewHolder.statusIcon.setImageResource(R.drawable.ic_dot1);
             }
 
-            Firebase firebase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(ParseUser.getCurrentUser().getObjectId()).child("basicInfo").child("picture");
-            firebase.addValueEventListener(new ValueEventListener() {
-
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Log.d(TAG, dataSnapshot.toString() + " -onChildAdded");
-                    String imageString = dataSnapshot.getValue().toString();
-                    byte[] decodedImage = Base64.decode(imageString, Base64.DEFAULT);
-                    Bitmap byteImage = BitmapFactory.decodeByteArray(decodedImage, 0, decodedImage.length);
-                    if (byteImage != null) {
-                        OutputStream os = null;
-                        Uri uri = null;
-                        try {
-                            File file = (new File(getActivity().getCacheDir(), "profile_image"));
-                            os = new FileOutputStream(file);
-                            byteImage.compress(Bitmap.CompressFormat.JPEG, 50, os);
-                            os.flush();
-                            os.close();
-                            uri = Uri.fromFile(file);
-                        } catch (FileNotFoundException e) {
-                            Log.d(TAG, "FileNotFoundException");
-                        } catch (IOException e) {
-                            Log.d(TAG, "IOException");
-                        }
-                        Picasso.with(getActivity())
-                                .load(uri)
-                                .resize(getResources().getInteger(R.integer.chat_height), getResources().getInteger(R.integer.chat_height))
-                                .transform(new CircleTransform())
-                                .placeholder(R.drawable.user1)
-                                .skipMemoryCache()
-                                .into(viewHolder.nameIcon);
-                    }
-                }
-
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {
-
-                }
-            });
+//            Firebase firebase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(ParseUser.getCurrentUser().getObjectId()).child("basicInfo").child("picture");
+//            firebase.addValueEventListener(new ValueEventListener() {
+//
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    Log.d(TAG, dataSnapshot.toString() + " -onChildAdded");
+//                    String imageString = dataSnapshot.getValue().toString();
+//                    byte[] decodedImage = Base64.decode(imageString, Base64.DEFAULT);
+//                    Bitmap byteImage = BitmapFactory.decodeByteArray(decodedImage, 0, decodedImage.length);
+//                    if (byteImage != null) {
+//                        OutputStream os = null;
+//                        Uri uri = null;
+//                        try {
+//                            File file = (new File(getActivity().getCacheDir(), "profile_image"));
+//                            os = new FileOutputStream(file);
+//                            byteImage.compress(Bitmap.CompressFormat.JPEG, 50, os);
+//                            os.flush();
+//                            os.close();
+//                            uri = Uri.fromFile(file);
+//                        } catch (FileNotFoundException e) {
+//                            Log.d(TAG, "FileNotFoundException");
+//                        } catch (IOException e) {
+//                            Log.d(TAG, "IOException");
+//                        }
+//                        Picasso.with(getActivity())
+//                                .load(uri)
+//                                .resize(getResources().getInteger(R.integer.chat_height), getResources().getInteger(R.integer.chat_height))
+//                                .transform(new CircleTransform())
+//                                .placeholder(R.drawable.user1)
+//                                .skipMemoryCache()
+//                                .into(viewHolder.nameIcon);
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(FirebaseError firebaseError) {
+//
+//                }
+//            });
 
             Long updateAt = Long.parseLong(updated_at);
             long now = new Date().getTime();

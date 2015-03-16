@@ -9,66 +9,64 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import zumma.com.ninegistapp.ParseConstants;
 import zumma.com.ninegistapp.R;
-import zumma.com.ninegistapp.StaticHelpers;
 import zumma.com.ninegistapp.custom.CustomFragment;
-import zumma.com.ninegistapp.database.table.ChatTable;
 import zumma.com.ninegistapp.database.table.FriendTable;
-import zumma.com.ninegistapp.model.Conversation;
+import zumma.com.ninegistapp.database.table.MessageTable;
+import zumma.com.ninegistapp.model.MessageChat;
+import zumma.com.ninegistapp.model.MessageObject;
 import zumma.com.ninegistapp.ui.Components.LayoutListView;
 import zumma.com.ninegistapp.ui.adapters.ChatAdapter;
-import zumma.com.ninegistapp.ui.adapters.ChatArrayList;
+import zumma.com.ninegistapp.ui.helpers.ChatHelper;
 import zumma.com.ninegistapp.ui.helpers.GDate;
-import zumma.com.ninegistapp.ui.listeners.MyChatListener;
-import zumma.com.ninegistapp.ui.listeners.UserChatListeners;
 
 public class ChatFragment extends CustomFragment {
 
 
     private static final String TAG = ChatFragment.class.getSimpleName();
-    private ChatAdapter adp;
-    private ChatArrayList convList;
+    private ChatAdapter adapter;
     private EditText txt;
     private String user_id;
-    private UserChatListeners userChatListeners;
-    private MyChatListener myChatListener;
-    private Firebase listnerBase;
-    private Firebase mlistnerBase;
     private String friend_id;
+    private UserChileEventListener userChileEventListener;
+    private FriendChileEventListener friendChileEventListener;
 
-    public ChatAdapter getAdp() {
-        return adp;
-    }
+    private Firebase user_baseRef;
+    private Firebase friend_baseRef;
 
-    public ChatArrayList getConvList() {
-        return convList;
-    }
+    private ChatHelper chatHelper;
 
-    private void loadConversationList() {
-        Bundle bundle = this.getArguments();
-        friend_id = bundle.getString(ParseConstants.KEY_USER_ID);
+
+    ArrayList<MessageObject> chatList = new ArrayList<MessageObject>();
+
+    public void initChat() {
+
+        chatHelper = new ChatHelper(getActivity());
 
         user_id = ParseUser.getCurrentUser().getObjectId();
+        friend_id = getArguments().getString(ParseConstants.KEY_USER_ID);
 
-        this.convList = new ChatArrayList(getActivity(), friend_id);
-        convList.initChatList();
+        user_baseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(user_id).child("roasters").child("Chat").child(friend_id);
+        friend_baseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(friend_id).child("roasters").child("Chat").child(user_id);
 
-        this.adp = new ChatAdapter(getActivity(),convList,friend_id);
+        userChileEventListener = new UserChileEventListener();
+        friendChileEventListener = new FriendChileEventListener();
 
-        listnerBase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(user_id).child("chats").child(friend_id);
-        userChatListeners = new UserChatListeners(adp, convList);
-        listnerBase.addChildEventListener(userChatListeners);
+        user_baseRef.addChildEventListener(userChileEventListener);
+        friend_baseRef.addChildEventListener(friendChileEventListener);
 
-        mlistnerBase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(friend_id).child("chats").child(user_id);
-        myChatListener = new MyChatListener(adp, convList);
-        mlistnerBase.addChildEventListener(myChatListener);
-
-        Log.d(TAG,"  path : "+ listnerBase.getPath().toString());
+        chatHelper.initChatList(friend_id,chatList);
+        adapter = new ChatAdapter(getActivity(), chatList);
     }
 
     private void sendMessage() {
@@ -76,49 +74,107 @@ public class ChatFragment extends CustomFragment {
         if (this.txt.length() == 0)
             return;
 
-
-//        final Firebase uFirebaseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(user_id).child("chats").child(friend_id);
-        final Firebase cFirebaseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(friend_id).child("chats").child(user_id);
-
         GDate date = new GDate();
 
         String str = this.txt.getText().toString();
         String time = date.getCurrent_time();
 
-        final Conversation conversation = new Conversation(user_id, friend_id,time, true, str);
-        StaticHelpers.upDateFriendListWithInChat(getActivity(), conversation,2);
-        cFirebaseRef.push().setValue(conversation, new Firebase.CompletionListener() {
+        final MessageChat chatObject = new MessageChat(user_id, friend_id, time, true, 1,str);
+        chatHelper.InsertChatMessage(friend_id,chatObject);
+
+        chatList.add(chatObject);
+        adapter.notifyDataSetChanged();
+        Log.d(TAG, chatObject.toString());
+        this.txt.setText(null);
+
+
+        user_baseRef.push().setValue(chatObject, new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                if (firebaseError == null) {
-                    Log.d(TAG, " CHAT SAVED  " + firebase.getKey());
-                    conversation.setUniqkey(firebase.getKey());
-                    conversation.setReport(1);
-                    cFirebaseRef.child(firebase.getKey()).setValue(conversation, new Firebase.CompletionListener() {
-                        @Override
-                        public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                            convList.upDateDeliveredConversation(conversation);
-                            adp.notifyDataSetChanged();
-                        }
-                    });
-                    StaticHelpers.upDateFriendListWithInChat(getActivity(), conversation,3);
-                }
+
+                HashMap<String,Object> update = new HashMap<String, Object>();
+                update.put("uniqkey",firebase.getKey());
+                update.put("report",1);
+                Firebase firebase1 = user_baseRef;
+                firebase1.child(firebase.getKey()).updateChildren(update);
+
+                chatObject.setSent(false);
+                chatObject.setUniqkey(firebase.getKey());
+                chatObject.setReport(1);
+                friend_baseRef.push().setValue(chatObject, new Firebase.CompletionListener() {
+                    @Override
+                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                        Log.d(TAG, "Saved both ways");
+                        chatHelper.upDateDeliveredConversation(chatObject, chatList);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
             }
         });
 
-        Log.d(TAG, conversation.toString());
-        convList.addNew(conversation);
-        adp.notifyDataSetChanged();
-        this.txt.setText(null);
-
     }
+
+
+
+
+    private class UserChileEventListener implements ChildEventListener {
+
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            Log.d(TAG, " na wa onChildAdded " + dataSnapshot.getValue() + "   " + s);
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            Log.d(TAG, " onChildChanged " + dataSnapshot.getValue() + "   " + s);
+            if (dataSnapshot != null) {
+                HashMap<String, String> map = (HashMap<String, String>) dataSnapshot.getValue();
+                int type = 1;
+                switch (type){
+                    case 1:
+                        MessageChat messageChat = dataSnapshot.getValue(MessageChat.class);
+                        if (messageChat.getFromId().equals(user_id)){
+                            int report = messageChat.getReport();
+                            ChatHelper chatHelper = new ChatHelper(getActivity());
+                            if (report == 2){
+                                chatHelper.upDisplayedConversation(messageChat,chatList);
+                                adapter.notifyDataSetChanged();
+                                Log.d(TAG, " messageChat adapter update " + messageChat.getCreated_at());
+                            }
+                        }else{
+                            Log.d(TAG, " i got to lse part");
+                        }
+
+                        Log.d(TAG, " messageChat report " + messageChat.getReport());
+                        break;
+                }
+
+            }
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(FirebaseError firebaseError) {
+
+        }
+    }
+
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
-        listnerBase.removeEventListener(userChatListeners);
-        mlistnerBase.removeEventListener(myChatListener);
+        user_baseRef.removeEventListener(userChileEventListener);
+        friend_baseRef.removeEventListener(friendChileEventListener);
     }
 
     public void onClick(View paramView) {
@@ -129,75 +185,152 @@ public class ChatFragment extends CustomFragment {
     }
 
     public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle) {
-        View localView = paramLayoutInflater.inflate(R.layout.chat_layout, null);
-        loadConversationList();
-        LayoutListView localListView = (LayoutListView) localView.findViewById(R.id.chat_list_view);
+        View view = paramLayoutInflater.inflate(R.layout.chat_layout, null);
+        initChat();
 
-        localListView.setAdapter(this.adp);
+        LayoutListView localListView = (LayoutListView) view.findViewById(R.id.chat_list_view);
+
+        localListView.setAdapter(this.adapter);
         localListView.setTranscriptMode(2);
         localListView.setStackFromBottom(true);
-        this.txt = ((EditText) localView.findViewById(R.id.chat_text_edit));
-        this.txt.setInputType(131073);
-        setTouchNClick(localView.findViewById(R.id.chat_send_button));
 
-        return localView;
+        this.txt = ((EditText) view.findViewById(R.id.chat_text_edit));
+        this.txt.setInputType(131073);
+        setTouchNClick(view.findViewById(R.id.chat_send_button));
+
+        return view;
     }
 
 
     @Override
     public void onResume() {
         super.onResume();
-
         sendMessageRead();
-        updateFriendMessageCount();
     }
 
 
-    public void updateFriendMessageCount(){
+    public void updateFriendMessageCount() {
 
         String SEL = FriendTable.COLUMN_ID + "=?";
         String[] arg = {friend_id};
 
         ContentValues values = new ContentValues();
         values.put(FriendTable.COLUMN_MSG_COUNT, 0);
-        values.put(FriendTable.COLUMN_STATUS_ICON,0);
+        values.put(FriendTable.COLUMN_STATUS_ICON, 0);
 
-        int update = getActivity().getContentResolver().update(FriendTable.CONTENT_URI, values,SEL,arg);
-        if (update > 0){
+        int update = getActivity().getContentResolver().update(FriendTable.CONTENT_URI, values, SEL, arg);
+        if (update > 0) {
             Log.d(TAG, "message count updated ");
         }
     }
 
-    public void sendMessageRead(){
+    public void sendMessageRead() {
 
-        String SELECTION = ChatTable.COLUMN_FRIEND_ID + "=? AND "+ChatTable.COLUMN_REPORT +"=?";
-        String[] args = {friend_id,"1"};
+        String SELECTION = MessageTable.COLUMN_FRIEND_ID + "=? AND " + MessageTable.COLUMN_REPORT + "=?";
+        String[] args = {friend_id, "1"};
 
-        Cursor cursor = getActivity().getContentResolver().query(ChatTable.CONTENT_URI,null,SELECTION,args,null);
+        Cursor cursor = getActivity().getContentResolver().query(MessageTable.CONTENT_URI, null, SELECTION, args, null);
         if (cursor != null && cursor.getCount() > 0) {
 
-            int indexUniq = cursor.getColumnIndex(ChatTable.COLUMN_UNIQ_ID);
-            int indexID = cursor.getColumnIndex(ChatTable.COLUMN_ID);
+            int indexUniq = cursor.getColumnIndex(MessageTable.COLUMN_UNIQ_ID);
+            int indexID = cursor.getColumnIndex(MessageTable.COLUMN_ID);
 
             cursor.moveToFirst();
             do {
-                String id = cursor.getString(indexID);
-                String uniq = cursor.getString(indexUniq);
-                listnerBase.child(uniq).child("report").setValue(2);
 
-                ContentValues values = new ContentValues();
-                values.put(ChatTable.COLUMN_REPORT,2);
-                Log.d(TAG, " sendMessageRead = "+values);
+                final String id = cursor.getString(indexID);
+                final String uniq = cursor.getString(indexUniq);
 
-                String SEL = ChatTable.COLUMN_ID + "=?";
-                String[] arg = {id};
-                int update = getActivity().getContentResolver().update(ChatTable.CONTENT_URI, values,SEL,arg);
-                if (update > 0){
-                    Log.d(TAG, "unig #value = "+uniq);
-                }
-            }while (cursor.moveToNext());
+                Log.d(TAG, " unig of unreported = " + uniq);
+
+                Firebase firebase1 = new Firebase(ParseConstants.FIREBASE_URL)
+                        .child("9Gist")
+                        .child(friend_id)
+                        .child("roasters")
+                        .child("Chat")
+                        .child(user_id)
+                        .child(uniq)
+                        .child("report");
+
+                firebase1.setValue(2, new Firebase.CompletionListener() {
+                    @Override
+                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                        ContentValues values = new ContentValues();
+                        values.put(MessageTable.COLUMN_REPORT, 2);
+                        Log.d(TAG, " sendMessageRead = " + values);
+
+                        String SEL = MessageTable.COLUMN_ID + "=?";
+                        String[] arg = {id};
+                        int update = getActivity().getContentResolver().update(MessageTable.CONTENT_URI, values, SEL, arg);
+                        if (update > 0) {
+                            Log.d(TAG, "unig #value = " + uniq);
+                        }
+                    }
+                });
+            } while (cursor.moveToNext());
             cursor.close();
         }
         cursor.close();
     }
+
+    private class FriendChileEventListener implements ChildEventListener {
+
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            if (dataSnapshot != null) {
+                HashMap<String, String> map = (HashMap<String, String>) dataSnapshot.getValue();
+                MessageChat messageChat = dataSnapshot.getValue(MessageChat.class);
+
+                if (messageChat.getReport() != 2){
+                    chatHelper.InsertChatMessage(friend_id,messageChat);
+                    chatList.add(messageChat);
+                    adapter.notifyDataSetChanged();
+                }
+
+
+
+                Log.d(TAG, " FriendChileEventListener onChildChanged has been delivered and read ");
+
+                Firebase firebase1 = new Firebase(ParseConstants.FIREBASE_URL)
+                        .child("9Gist")
+                        .child(messageChat.getFromId())
+                        .child("roasters")
+                        .child("Chat")
+                        .child(messageChat.getToId())
+                        .child(messageChat.getUniqkey())
+                        .child("report");
+
+                firebase1.setValue(2);
+//
+//                HashMap<String,Object> update = new HashMap<String, Object>();
+//                update.put("report",2);
+//                Firebase firebase1 = user_baseRef;
+//                firebase1.child(messageChat.getUniqkey()).updateChildren(update);
+
+            }
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(FirebaseError firebaseError) {
+
+        }
+    }
+
+
 }

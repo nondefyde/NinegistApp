@@ -101,4 +101,6 @@ public final class ParseConstants {
     public static final String FRIENDS_AVAILABLE = "friends_search_flag";
     public static final String PARSE_USER_CREATED = "parse_user_created";
     public static final String ACTION_BAR_TITLE = "action_bar_title";
+    public static final String ROASTER = "roasters";
+    public static final String CHAT = "Chat";
 }

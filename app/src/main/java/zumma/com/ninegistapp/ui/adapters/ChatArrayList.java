@@ -9,7 +9,7 @@ import android.util.Log;
 import java.util.ArrayList;
 
 import zumma.com.ninegistapp.StaticHelpers;
-import zumma.com.ninegistapp.database.table.ChatTable;
+import zumma.com.ninegistapp.database.table.MessageTable;
 import zumma.com.ninegistapp.model.Conversation;
 
 /**
@@ -36,18 +36,18 @@ public class ChatArrayList extends ArrayList<Conversation> {
 
         ContentValues values = new ContentValues();
 
-        values.put(ChatTable.COLUMN_FROM,conversation.getFromId());
-        values.put(ChatTable.COLUMN_TO,conversation.getToId());
-        values.put(ChatTable.COLUMN_MESSAGE,conversation.getMsg());
-        values.put(ChatTable.COLUMN_SENT,conversation.isSent());
-        values.put(ChatTable.COLUMN_TIME,conversation.getDate());
-        values.put(ChatTable.COLUMN_FRIEND_ID,friend_id);
-        values.put(ChatTable.COLUMN_PRIVATE,conversation.getPflag());
-        values.put(ChatTable.COLUMN_REPORT,conversation.getReport());
-        values.put(ChatTable.COLUMN_CREATED_AT,conversation.getCreated_at());
-        values.put(ChatTable.COLUMN_UNIQ_ID,conversation.getUniqkey());
+        values.put(MessageTable.COLUMN_FROM,conversation.getFromId());
+        values.put(MessageTable.COLUMN_TO,conversation.getToId());
+        values.put(MessageTable.COLUMN_MESSAGE,conversation.getMsg());
+        values.put(MessageTable.COLUMN_SENT,conversation.isSent());
+        values.put(MessageTable.COLUMN_TIME,conversation.getDate());
+        values.put(MessageTable.COLUMN_FRIEND_ID,friend_id);
+        values.put(MessageTable.COLUMN_PRIVATE,conversation.getPflag());
+        values.put(MessageTable.COLUMN_REPORT,conversation.getReport());
+        values.put(MessageTable.COLUMN_CREATED_AT,conversation.getCreated_at());
+        values.put(MessageTable.COLUMN_UNIQ_ID,conversation.getUniqkey());
 
-        Uri uri = context.getContentResolver().insert(ChatTable.CONTENT_URI, values);
+        Uri uri = context.getContentResolver().insert(MessageTable.CONTENT_URI, values);
         if (uri != null){
             Log.d(TAG, " uri  "+uri.toString());
         }
@@ -64,14 +64,14 @@ public class ChatArrayList extends ArrayList<Conversation> {
             }
         }
 
-        String SELECTION = ChatTable.COLUMN_FRIEND_ID + "=? AND "+ChatTable.COLUMN_CREATED_AT +"=?";
+        String SELECTION = MessageTable.COLUMN_FRIEND_ID + "=? AND "+ MessageTable.COLUMN_CREATED_AT +"=?";
         String[] args = {friend_id, conversation.getCreated_at()+""};
 
         ContentValues values = new ContentValues();
-        values.put(ChatTable.COLUMN_REPORT,conversation.getReport());
-        values.put(ChatTable.COLUMN_UNIQ_ID,conversation.getUniqkey());
+        values.put(MessageTable.COLUMN_REPORT,conversation.getReport());
+        values.put(MessageTable.COLUMN_UNIQ_ID,conversation.getUniqkey());
 
-        int update = context.getContentResolver().update(ChatTable.CONTENT_URI, values,SELECTION,args);
+        int update = context.getContentResolver().update(MessageTable.CONTENT_URI, values,SELECTION,args);
         if (update > 0){
             Log.d(TAG, " update delivered happened  "+update);
         }
@@ -87,13 +87,13 @@ public class ChatArrayList extends ArrayList<Conversation> {
                 this.add(i,conver);
             }
         }
-        String SELECTION = ChatTable.COLUMN_FRIEND_ID + "=? AND "+ChatTable.COLUMN_CREATED_AT +"=?";
+        String SELECTION = MessageTable.COLUMN_FRIEND_ID + "=? AND "+ MessageTable.COLUMN_CREATED_AT +"=?";
         String[] args = {friend_id, conversation.getCreated_at()+""};
 
         ContentValues values = new ContentValues();
-        values.put(ChatTable.COLUMN_REPORT,conversation.getReport());
+        values.put(MessageTable.COLUMN_REPORT,conversation.getReport());
 
-        int update = context.getContentResolver().update(ChatTable.CONTENT_URI, values,SELECTION,args);
+        int update = context.getContentResolver().update(MessageTable.CONTENT_URI, values,SELECTION,args);
         if (update > 0){
             Log.d(TAG, " update displayed happened  "+update);
         }
@@ -102,23 +102,23 @@ public class ChatArrayList extends ArrayList<Conversation> {
 
     public void initChatList(){
 
-        String SELECTION = ChatTable.COLUMN_FRIEND_ID + "=?";
+        String SELECTION = MessageTable.COLUMN_FRIEND_ID + "=?";
         String[] args = {friend_id};
 
-        Cursor cursor = context.getContentResolver().query(ChatTable.CONTENT_URI, null, SELECTION, args,ChatTable.COLUMN_CREATED_AT);
+        Cursor cursor = context.getContentResolver().query(MessageTable.CONTENT_URI, null, SELECTION, args, MessageTable.COLUMN_CREATED_AT);
 
         if (cursor != null && cursor.getCount() > 0) {
 
-            int indexID = cursor.getColumnIndex(ChatTable.COLUMN_ID);
-            int indexFrom = cursor.getColumnIndex(ChatTable.COLUMN_FROM);
-            int indexTo = cursor.getColumnIndex(ChatTable.COLUMN_TO);
-            int indexMsg = cursor.getColumnIndex(ChatTable.COLUMN_MESSAGE);
-            int indexSent = cursor.getColumnIndex(ChatTable.COLUMN_SENT);
-            int indexTime = cursor.getColumnIndex(ChatTable.COLUMN_TIME);
-            int indexPrivate = cursor.getColumnIndex(ChatTable.COLUMN_PRIVATE);
-            int indexReport = cursor.getColumnIndex(ChatTable.COLUMN_REPORT);
-            int indexCreatedAt = cursor.getColumnIndex(ChatTable.COLUMN_CREATED_AT);
-            int indexUnique = cursor.getColumnIndex(ChatTable.COLUMN_UNIQ_ID);
+            int indexID = cursor.getColumnIndex(MessageTable.COLUMN_ID);
+            int indexFrom = cursor.getColumnIndex(MessageTable.COLUMN_FROM);
+            int indexTo = cursor.getColumnIndex(MessageTable.COLUMN_TO);
+            int indexMsg = cursor.getColumnIndex(MessageTable.COLUMN_MESSAGE);
+            int indexSent = cursor.getColumnIndex(MessageTable.COLUMN_SENT);
+            int indexTime = cursor.getColumnIndex(MessageTable.COLUMN_TIME);
+            int indexPrivate = cursor.getColumnIndex(MessageTable.COLUMN_PRIVATE);
+            int indexReport = cursor.getColumnIndex(MessageTable.COLUMN_REPORT);
+            int indexCreatedAt = cursor.getColumnIndex(MessageTable.COLUMN_CREATED_AT);
+            int indexUnique = cursor.getColumnIndex(MessageTable.COLUMN_UNIQ_ID);
 
             cursor.moveToFirst();
 

@@ -10,7 +10,7 @@ import zumma.com.ninegistapp.database.DataBaseProvider;
  * Created by Okafor on 08/12/2014.
  */
 
-public class ChatTable {
+public class MessageTable {
 
     public static final String TABLE_NAME = "chat_tb";
     public static final Uri CONTENT_URI = Uri.parse(DataBaseProvider.getContentURIString() + "/" + TABLE_NAME);
@@ -29,6 +29,7 @@ public class ChatTable {
     public static final String COLUMN_TIME = "time";
     public static final String COLUMN_MESSAGE = "message";
     public static final String COLUMN_CREATED_AT = "createdAt";
+    public static final String COLUMN_MESSAGE_TYPE = "message_type";
 
     // Database creation sql statement
     public static final String CREATE_TABLE = "create table " + TABLE_NAME
@@ -39,6 +40,7 @@ public class ChatTable {
             + COLUMN_FRIEND_ID + " TEXT,"
             + COLUMN_REPORT + " INTEGER,"
             + COLUMN_SENT + " INTEGER,"
+            + COLUMN_MESSAGE_TYPE + " TEXT,"
             + COLUMN_PRIVATE + " INTEGER,"
             + COLUMN_MESSAGE + " TEXT,"
             + COLUMN_TIME + " TEXT,"

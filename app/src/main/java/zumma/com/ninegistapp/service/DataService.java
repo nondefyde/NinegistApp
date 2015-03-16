@@ -14,8 +14,8 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 
 import zumma.com.ninegistapp.ParseConstants;
-import zumma.com.ninegistapp.database.table.ChatTable;
 import zumma.com.ninegistapp.database.table.FriendTable;
+import zumma.com.ninegistapp.database.table.MessageTable;
 import zumma.com.ninegistapp.service.listeners.ChatListeners;
 import zumma.com.ninegistapp.service.listeners.FriendListener;
 
@@ -30,7 +30,10 @@ public class DataService extends Service {
     private String user_id;
     private ArrayList<String> frList;
 
+    private Firebase[] firebases;
+
     public DataService() {
+
     }
 
     @Override
@@ -43,22 +46,20 @@ public class DataService extends Service {
 
         Toast.makeText(this, "service started", Toast.LENGTH_LONG).show();
 
-        friendListener = new FriendListener(this);
+//        friendListener = new FriendListener(this);
         chatListener = new ChatListeners(this);
 
         mCurrentUser = ParseUser.getCurrentUser();
         user_id = mCurrentUser.getObjectId();
 
-        chatFirebase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(user_id).child("chats");
-        chatFirebase.addChildEventListener(chatListener);
-//
         if (frList.size() > 0){
             for(String friendId : frList){
-                Firebase mFirebaseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(friendId);
-                mFirebaseRef.addValueEventListener(friendListener);
-                Log.d(TAG, " PATH : " + mFirebaseRef.getPath().toString());
+                Firebase mFirebaseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(user_id).child("roasters").child("Chat").child(friendId);
+                mFirebaseRef.addChildEventListener(chatListener);
+                Log.d(TAG, "LISTENER ADDED TO PATH PATH : " + mFirebaseRef.getPath().toString());
             }
         }
+
         return START_STICKY;
     }
 
@@ -68,20 +69,19 @@ public class DataService extends Service {
         Toast.makeText(this, "service started", Toast.LENGTH_LONG).show();
 
         frList = getChatUser();
+        firebases = new Firebase[frList.size()];
+
     }
 
     @Override
     public void onDestroy() {
         Toast.makeText(this, "service done", Toast.LENGTH_LONG).show();
 //
-//        if (frList.size() > 0){
-//            for(String userId : frList){
-//                Firebase mFirebaseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist/").child(userId);
-//                mFirebaseRef.removeEventListener(chatListener);
-//            }
-//        }
-
-        chatFirebase.removeEventListener(chatListener);
+        if (firebases.length > 0){
+            for(Firebase firebase : firebases){
+                firebase.removeEventListener(chatListener);
+            }
+        }
     }
 
 
@@ -92,7 +92,7 @@ public class DataService extends Service {
         Cursor cursor = getContentResolver().query(FriendTable.CONTENT_URI, null, null, null, null);
 
         if (cursor != null && cursor.getCount() > 0) {
-            int indexID = cursor.getColumnIndex(ChatTable.COLUMN_ID);
+            int indexID = cursor.getColumnIndex(MessageTable.COLUMN_ID);
             cursor.moveToFirst();
             do {
                 String id = cursor.getString(indexID);

@@ -173,7 +173,6 @@ public class MainActivity extends CustomActivity
 
             }
         });
-
     }
 
     private void setUpHeaderImage(){
@@ -480,13 +479,12 @@ public class MainActivity extends CustomActivity
                 startService(fiIntent);
             }
 
+            Intent fiIntent = new Intent(this, DataService.class);
+            startService(fiIntent);
+
         }else{
             Toast.makeText(this, "Cannot connect to the network...", Toast.LENGTH_LONG).show();
         }
-
-        Intent fiIntent = new Intent(this, DataService.class);
-        startService(fiIntent);
-
     }
 
     public void initUser(){

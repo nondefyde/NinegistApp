@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import zumma.com.ninegistapp.database.table.ChatTable;
+import zumma.com.ninegistapp.database.table.MessageTable;
 import zumma.com.ninegistapp.database.table.FriendTable;
 
 
@@ -13,7 +13,7 @@ import zumma.com.ninegistapp.database.table.FriendTable;
  */
 public class ChatSqlLiteHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "abcdef.db";
+    private static final String DATABASE_NAME = "zf.db";
     private static final int DATABASE_VERSION = 1;
 
     public ChatSqlLiteHelper(Context context) {
@@ -23,7 +23,7 @@ public class ChatSqlLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(FriendTable.CREATE_TABLE);
-        db.execSQL(ChatTable.CREATE_TABLE);
+        db.execSQL(MessageTable.CREATE_TABLE);
     }
 
     @Override
