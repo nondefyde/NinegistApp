@@ -84,11 +84,21 @@
             android:name=".ui.activities.SelectPicture"
             android:label="@string/title_activity_select_picture" >
         </activity>
+
+        <activity
+            android:name=".ui.activities.Profile"
+            android:label="@string/title_activity_select_picture" >
+        </activity>
+
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" >
         </activity>
         <activity
             android:name=".ui.activities.PictureTest"
             android:label="@string/title_activity_picture_test" >
+        </activity>
+        <activity
+            android:name=".ui.activities.ViewProfile"
+            android:label="@string/title_activity_view_profile" >
         </activity>
     </application>
 

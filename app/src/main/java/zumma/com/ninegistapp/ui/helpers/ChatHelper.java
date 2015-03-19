@@ -6,8 +6,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
 
+import zumma.com.ninegistapp.StaticMethods;
 import zumma.com.ninegistapp.database.table.FriendTable;
 import zumma.com.ninegistapp.database.table.MessageTable;
 import zumma.com.ninegistapp.model.MessageChat;
@@ -21,9 +24,11 @@ public class ChatHelper {
     private static final String TAG = ChatHelper.class.getSimpleName();
 
     private Context context;
+    private ParseUser parseUser;
 
     public ChatHelper(Context context) {
         this.context = context;
+        parseUser =  ParseUser.getCurrentUser();
     }
 
     public void upDateDeliveredConversation(MessageChat conversation, ArrayList<MessageObject> messageObjects) {
@@ -47,6 +52,7 @@ public class ChatHelper {
         if (update > 0) {
             Log.d(TAG, " update delivered happened  " + update);
         }
+
     }
 
     public void upDisplayedConversation(MessageChat conversation, ArrayList<MessageObject> messageObjects) {
@@ -121,6 +127,8 @@ public class ChatHelper {
     public void InsertChatMessage(String friend_id, MessageChat messageObject) {
 
         boolean chatExit = validateComingChat(friend_id,messageObject);
+        Log.d(TAG, " chat exist " + chatExit);
+
         if (chatExit == false){
             ContentValues values = new ContentValues();
 
@@ -140,6 +148,12 @@ public class ChatHelper {
             if (uri != null) {
                 Log.d(TAG, " messageChat inserted " + messageObject);
             }
+
+            if (!messageObject.getFromId().equals(parseUser.getObjectId()) && messageObject.getReport() != 2){
+                upDateFriendListWithInComingChat(context,messageObject,1);
+                StaticMethods.sendChatNotification(context,messageObject.getMessage());
+            }
+
         }
     }
 
@@ -149,7 +163,6 @@ public class ChatHelper {
         String SELECTION = FriendTable.COLUMN_ID + "=?";
         switch (icon_type){
             case 1:
-
                 String[] args = {messageChat.getFromId()};
 
                 int mCount = 0;
@@ -196,8 +209,6 @@ public class ChatHelper {
                 }
                 break;
         }
-
-
     }
 
 
@@ -211,4 +222,38 @@ public class ChatHelper {
         }
         return false;
     }
+
+    public void upDateFriendStatusChat(Context context,MessageChat messageChat,int type, int icon_type){
+
+        ContentValues values = null;
+        int update = 0;
+
+        String SELECTION = FriendTable.COLUMN_ID + "=?";
+        String message = messageChat.getMessage();
+        String formatted_message = message.length() > 30 ? message.substring(0, 30) + "..." : message;
+        GDate date = new GDate();
+
+        if (type == 1){
+
+            values = new ContentValues();
+            values.put(FriendTable.COLUMN_STATUS, formatted_message);
+            values.put(FriendTable.COLUMN_UPDATED_AT, date.getTimeStamp());
+            values.put(FriendTable.COLUMN_STATUS_ICON, icon_type);
+
+            if(icon_type != 0){
+                String[] arg1 = {messageChat.getToId()};
+                update = context.getContentResolver().update(FriendTable.CONTENT_URI, values, SELECTION, arg1);
+
+            }else{
+                values.put(FriendTable.COLUMN_MSG_COUNT,0);
+                String[] arg1 = {messageChat.getFromId()};
+                update = context.getContentResolver().update(FriendTable.CONTENT_URI, values, SELECTION, arg1);
+            }
+            if (update > 0) {
+                Log.d(TAG, " upDateFriendStatusChat FriendTable updated  " + update);
+            }
+        }
+    }
+
+
 }

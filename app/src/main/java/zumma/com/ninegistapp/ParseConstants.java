@@ -13,22 +13,12 @@ public final class ParseConstants {
     public static final String SERVICE = "ninegist";
 
 
-    public static final String CLASS_MESSAGES = "Messages";
+    public static final String OBJECT_ID = "objectId";
+    public static final String CLASS_PROFILE_IMAGE = "profile_images";
 
     public static final String KEY_FRIENDS_RELATION = "friends_relation";
-    public static final String KEY_RECIPIENT_IDS = "recipients";
-    public static final String KEY_SENDER_ID = "senderId";
     public static final String KEY_USER_ID = "userId";
-    public static final String KEY_SENDER_NAME = "senderName";
-    public static final String KEY_OBJECT_ID = "objectId";
 
-    public static final String NETWORK_CONNECTED = "network_connected";
-    public static final String CONTACT_SYNCED = "contacts_synced";
-    public static final String NETWORK_SERVICE = "network_service";
-    public static final String CHAT_SERVICE_STARTED = "chat_service_started";
-    public static final String XMPP_ACCOUNT_CREATED = "account_exist";
-
-    public static final String TYPE_VIDEO = "video";
     public static final String TYPE_IMAGE = "image";
 
 
@@ -103,4 +93,5 @@ public final class ParseConstants {
     public static final String ACTION_BAR_TITLE = "action_bar_title";
     public static final String ROASTER = "roasters";
     public static final String CHAT = "Chat";
+    public static final String NG_FRIENDS = "ng_friends";
 }

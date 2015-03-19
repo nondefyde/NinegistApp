@@ -3,6 +3,7 @@ package zumma.com.ninegistapp.ui.fragments;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -42,9 +43,12 @@ import java.util.Locale;
 import zumma.com.ninegistapp.MainActivity;
 import zumma.com.ninegistapp.ParseConstants;
 import zumma.com.ninegistapp.R;
+import zumma.com.ninegistapp.TextDrawable;
 import zumma.com.ninegistapp.custom.CustomFragment;
 import zumma.com.ninegistapp.database.table.FriendTable;
 import zumma.com.ninegistapp.ui.helpers.FriendsUtilHelper;
+import zumma.com.ninegistapp.utils.ColorGenerator;
+import zumma.com.ninegistapp.utils.DrawableProvider;
 
 public class FriendsFragment extends CustomFragment implements
         LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener, SearchView.OnCloseListener {
@@ -53,10 +57,13 @@ public class FriendsFragment extends CustomFragment implements
     // Bundle key for saving previously selected search result item
     private static final String STATE_PREVIOUSLY_SELECTED_KEY =
             "com.zumacomm.ngapp.ui.SELECTED_ITEM";
+
+    private static final int HIGHLIGHT_COLOR = 0x999be6ff;
+
     protected AdapterView.OnItemClickListener mOnItemClickedListener = new AdapterView.OnItemClickListener() {
 
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+            view.setSelected(true);
             final Cursor cursor = mAdapter.getCursor();
 
             // Moves to the Cursor row corresponding to the ListView item that was clicked
@@ -85,6 +92,10 @@ public class FriendsFragment extends CustomFragment implements
     private ListView listView;
     private String userId;
 
+    // declare the color generator and drawable builder
+    private ColorGenerator mColorGenerator = ColorGenerator.MATERIAL;
+    private TextDrawable.IBuilder mDrawableBuilder;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -94,8 +105,47 @@ public class FriendsFragment extends CustomFragment implements
         TextView empty = (TextView) rootView.findViewById(R.id.empty);
         listView.setEmptyView(empty);
 
-        listView.setOnItemClickListener(mOnItemClickedListener);
+        Intent intent = getActivity().getIntent();
+        int type = intent.getIntExtra("TYPE", DrawableProvider.SAMPLE_RECT);
 
+        // initialize the builder based on the "TYPE"
+        switch (type) {
+            case DrawableProvider.SAMPLE_RECT:
+                mDrawableBuilder = TextDrawable.builder()
+                        .rect();
+                break;
+            case DrawableProvider.SAMPLE_ROUND_RECT:
+                mDrawableBuilder = TextDrawable.builder()
+                        .roundRect(10);
+                break;
+            case DrawableProvider.SAMPLE_ROUND:
+                mDrawableBuilder = TextDrawable.builder()
+                        .round();
+                break;
+            case DrawableProvider.SAMPLE_RECT_BORDER:
+                mDrawableBuilder = TextDrawable.builder()
+                        .beginConfig()
+                        .withBorder(4)
+                        .endConfig()
+                        .rect();
+                break;
+            case DrawableProvider.SAMPLE_ROUND_RECT_BORDER:
+                mDrawableBuilder = TextDrawable.builder()
+                        .beginConfig()
+                        .withBorder(4)
+                        .endConfig()
+                        .roundRect(10);
+                break;
+            case DrawableProvider.SAMPLE_ROUND_BORDER:
+                mDrawableBuilder = TextDrawable.builder()
+                        .beginConfig()
+                        .withBorder(4)
+                        .endConfig()
+                        .round();
+                break;
+        }
+
+        listView.setOnItemClickListener(mOnItemClickedListener);
         return rootView;
     }
 
@@ -145,6 +195,9 @@ public class FriendsFragment extends CustomFragment implements
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
+
+
+
     }
 
 
@@ -356,6 +409,7 @@ public class FriendsFragment extends CustomFragment implements
             return -1;
         }
 
+
         /**
          * Overrides newView() to inflate the list item views.
          */
@@ -366,6 +420,7 @@ public class FriendsFragment extends CustomFragment implements
 
             final ViewHolder viewHolder = new ViewHolder();
 
+            viewHolder.view = itemLayout;
             viewHolder.objectId = (TextView) itemLayout.findViewById(R.id.objectId);
             viewHolder.nameIcon = (ImageView) itemLayout.findViewById(R.id.nameIcon);
             viewHolder.nameLabel = (TextView) itemLayout.findViewById(R.id.nameLabel);
@@ -374,8 +429,11 @@ public class FriendsFragment extends CustomFragment implements
             viewHolder.countLabel = (TextView) itemLayout.findViewById(R.id.countField);
             viewHolder.statusLabel = (TextView) itemLayout.findViewById(R.id.message_status);
             viewHolder.statusIcon = (ImageView) itemLayout.findViewById(R.id.statusIcon);
+            viewHolder.check_icon = (ImageView) itemLayout.findViewById(R.id.check_icon);
 
             itemLayout.setTag(viewHolder);
+
+
 
             return itemLayout;
         }
@@ -426,46 +484,6 @@ public class FriendsFragment extends CustomFragment implements
                     viewHolder.statusIcon.setImageResource(R.drawable.ic_dot1);
             }
 
-//            Firebase firebase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(ParseUser.getCurrentUser().getObjectId()).child("basicInfo").child("picture");
-//            firebase.addValueEventListener(new ValueEventListener() {
-//
-//                @Override
-//                public void onDataChange(DataSnapshot dataSnapshot) {
-//                    Log.d(TAG, dataSnapshot.toString() + " -onChildAdded");
-//                    String imageString = dataSnapshot.getValue().toString();
-//                    byte[] decodedImage = Base64.decode(imageString, Base64.DEFAULT);
-//                    Bitmap byteImage = BitmapFactory.decodeByteArray(decodedImage, 0, decodedImage.length);
-//                    if (byteImage != null) {
-//                        OutputStream os = null;
-//                        Uri uri = null;
-//                        try {
-//                            File file = (new File(getActivity().getCacheDir(), "profile_image"));
-//                            os = new FileOutputStream(file);
-//                            byteImage.compress(Bitmap.CompressFormat.JPEG, 50, os);
-//                            os.flush();
-//                            os.close();
-//                            uri = Uri.fromFile(file);
-//                        } catch (FileNotFoundException e) {
-//                            Log.d(TAG, "FileNotFoundException");
-//                        } catch (IOException e) {
-//                            Log.d(TAG, "IOException");
-//                        }
-//                        Picasso.with(getActivity())
-//                                .load(uri)
-//                                .resize(getResources().getInteger(R.integer.chat_height), getResources().getInteger(R.integer.chat_height))
-//                                .transform(new CircleTransform())
-//                                .placeholder(R.drawable.user1)
-//                                .skipMemoryCache()
-//                                .into(viewHolder.nameIcon);
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(FirebaseError firebaseError) {
-//
-//                }
-//            });
-
             Long updateAt = Long.parseLong(updated_at);
             long now = new Date().getTime();
             String convertedDate = DateUtils.getRelativeTimeSpanString(
@@ -510,6 +528,35 @@ public class FriendsFragment extends CustomFragment implements
 
             viewHolder.statusLabel.setText(status);
 
+
+            ListData data = new ListData(id);
+            // provide support for selected state
+            updateCheckedState(viewHolder, data);
+//            viewHolder.nameIcon.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    // when the image is clicked, update the selected state
+//                    ListData data = new ListData(id);
+//                    data.setChecked(!data.isChecked);
+//                    updateCheckedState(viewHolder, data);
+//                }
+//            });
+
+
+        }
+
+        private void updateCheckedState(ViewHolder holder, ListData item) {
+            if (item.isChecked) {
+                holder.nameIcon.setImageDrawable(mDrawableBuilder.build(" ", 0xff616161));
+                holder.view.setBackgroundColor(HIGHLIGHT_COLOR);
+                holder.check_icon.setVisibility(View.VISIBLE);
+            }
+            else {
+                TextDrawable drawable = mDrawableBuilder.build(String.valueOf(item.data.toUpperCase().charAt(0)), mColorGenerator.getColor(item.data));
+                holder.nameIcon.setImageDrawable(drawable);
+                holder.view.setBackgroundColor(Color.TRANSPARENT);
+                holder.check_icon.setVisibility(View.GONE);
+            }
         }
 
         /**
@@ -565,12 +612,14 @@ public class FriendsFragment extends CustomFragment implements
             return mAlphabetIndexer.getSectionForPosition(i);
         }
 
+
         /**
          * A class that defines fields for each resource ID in the list item layout. This allows
          * ContactsAdapter.newView() to store the IDs once, when it inflates the layout, instead of
          * calling findViewById in each iteration of bindView.
          */
         private class ViewHolder {
+            View view;
             TextView objectId;
             ImageView nameIcon;
             TextView nameLabel;
@@ -579,6 +628,24 @@ public class FriendsFragment extends CustomFragment implements
             TextView statusLabel;
             TextView countLabel;
             ImageView statusIcon;
+            ImageView check_icon;
+        }
+
+
+    }
+
+    private static class ListData {
+
+        private String data;
+
+        private boolean isChecked;
+
+        public ListData(String data) {
+            this.data = data;
+        }
+
+        public void setChecked(boolean isChecked) {
+            this.isChecked = isChecked;
         }
     }
 }

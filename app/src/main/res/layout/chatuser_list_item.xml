@@ -13,11 +13,23 @@
         android:background="@android:color/white"
         android:padding="5dp">
 
-        <ImageView
-            android:id="@+id/nameIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/user1" />
+        <FrameLayout
+            android:id="@+id/pics"
+            android:layout_width="60dp"
+            android:layout_height="60dp">
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:id="@+id/nameIcon"/>
+
+            <ImageView
+                android:visibility="gone"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/check_sm"
+                android:id="@+id/check_icon"/>
+        </FrameLayout>
 
 
         <TextView
@@ -26,9 +38,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="3dp"
             android:layout_marginLeft="10dp"
-            android:layout_toEndOf="@+id/nameIcon"
+            android:layout_toEndOf="@+id/pics"
             android:layout_toLeftOf="@+id/timeLabel"
-            android:layout_toRightOf="@+id/nameIcon"
+            android:layout_toRightOf="@+id/pics"
             android:layout_toStartOf="@+id/timeLabel"
             android:padding="2dp"
             android:text="Medium Text"
@@ -41,9 +53,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="3dp"
             android:layout_marginLeft="10dp"
-            android:layout_toEndOf="@+id/nameIcon"
+            android:layout_toEndOf="@+id/pics"
             android:layout_toLeftOf="@+id/timeLabel"
-            android:layout_toRightOf="@+id/nameIcon"
+            android:layout_toRightOf="@+id/pics"
             android:layout_toStartOf="@+id/timeLabel"
             android:padding="2dp"
             android:text="Medium Text"
@@ -72,7 +84,7 @@
             android:layout_alignEnd="@+id/timeLabel"
             android:layout_alignRight="@+id/timeLabel"
             android:layout_below="@+id/nameLabel"
-            android:layout_toRightOf="@+id/nameIcon">
+            android:layout_toRightOf="@+id/pics">
 
             <ImageView
                 android:id="@+id/statusIcon"

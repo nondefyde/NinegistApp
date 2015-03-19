@@ -29,4 +29,7 @@
     <color name="main_color_gray_lt">#ffacacac</color>
     <color name="main_color_gray">#ff7d7d7d</color>
     <color name="gray_light">#ffe8e8e8</color>
+
+    <color name="pressed_color">#4d90fe</color>
+    <color name="default_color">#ffffff</color>
 </resources>

@@ -97,5 +97,7 @@
     <string name="edit_profile">Profile</string>
     <string name="label_picture">Select Picture</string>
     <string name="title_activity_picture_test">PictureTest</string>
+    <string name="title_activity_view_profile">View Profile</string>
+    <string name="default_view_profile">-No Status-</string>
 
 </resources>

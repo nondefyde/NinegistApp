@@ -128,8 +128,10 @@ public class FriendsSearchService extends Service {
                 }
             }
 
+
+
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            preferences.edit().putBoolean(ParseConstants.FRIENDS_AVAILABLE, true).apply();
+            preferences.edit().putBoolean(ParseConstants.NG_FRIENDS, true).apply();
             stopSelf(msg.arg1);
         }
     }

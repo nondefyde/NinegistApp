@@ -8,7 +8,6 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import zumma.com.ninegistapp.StaticHelpers;
 import zumma.com.ninegistapp.database.table.MessageTable;
 import zumma.com.ninegistapp.model.Conversation;
 
@@ -97,7 +96,6 @@ public class ChatArrayList extends ArrayList<Conversation> {
         if (update > 0){
             Log.d(TAG, " update displayed happened  "+update);
         }
-        StaticHelpers.upDateFriendListWithInChat(context, conversation, 4);
     }
 
     public void initChatList(){

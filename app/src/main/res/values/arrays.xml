@@ -16,7 +16,7 @@
     </string-array>
     <string-array name="arr_left_nav_list">
         <item>Home</item>
-        <item>Settings</item>
-        <item>Invite Friends</item>
+        <!--<item>Settings</item>-->
+        <!--<item>Invite Friends</item>-->
     </string-array>
 </resources>

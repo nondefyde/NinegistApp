@@ -15,11 +15,13 @@
 
     <TextView
         android:id="@+id/textView1"
-        android:layout_width="wrap_content"
+        android:layout_width="374dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/pad_5dp"
         android:text="James Stevens"
         android:textColor="@color/white"
-        android:textSize="@dimen/txt_16sp" />
+        android:textSize="@dimen/txt_16sp"
+        android:layout_gravity="center"
+        android:gravity="center_vertical|center_horizontal" />
 
 </LinearLayout>

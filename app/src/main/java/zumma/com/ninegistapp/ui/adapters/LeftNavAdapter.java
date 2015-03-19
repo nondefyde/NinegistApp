@@ -14,7 +14,7 @@ import zumma.com.ninegistapp.R;
 public class LeftNavAdapter extends BaseAdapter {
     private static final String TAG = LeftNavAdapter.class.getSimpleName();
     private Context context;
-    private int[] icons = {R.drawable.ic_nav1, R.drawable.ic_nav4, R.drawable.ic_nav5};
+    private int[] icons = {R.drawable.ic_nav1};
     private String[] items;
     private int selected;
 

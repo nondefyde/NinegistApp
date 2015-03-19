@@ -35,7 +35,6 @@ public class FriendListener implements ValueEventListener {
 //        if (friendList != null){
 //            upDateFriendTable(friendList);
 //        }
-
     }
 
     @Override

@@ -60,30 +60,54 @@ public class ChatAdapter extends BaseAdapter {
             if (messageObject.getFromId().equals(user_id)) {
 
                 lView = fInflater.inflate(R.layout.chat_sent, parent, false);
-                ImageView status = (ImageView) lView.findViewById(R.id.message_status);
+                ImageView status = (ImageView) lView.findViewById(R.id.user_reply_status);
 
-                chat_message = (TextView) lView.findViewById(R.id.msg_text);
+                chat_message = (TextView) lView.findViewById(R.id.chat_user_reply);
                 chat_message.setText(messageChat.getMessage());
+
+                TextView time = (TextView) lView.findViewById(R.id.user_reply_timing);
+
+                ImageView imageView1 = (ImageView) lView.findViewById(R.id.user_reply_sent);
+                ImageView imageView2 = (ImageView) lView.findViewById(R.id.user_reply_status);
+                ImageView imageView3 = (ImageView) lView.findViewById(R.id.user_reply_status2);
 
                 int report = messageChat.getReport();
                 Log.d(TAG, "report is " + report);
                 switch (report) {
                     case 0:
-                        status.setImageResource(R.drawable.ic_dot1);
+                        imageView1.setVisibility(View.VISIBLE);
+                        imageView2.setVisibility(View.INVISIBLE);
+                        imageView3.setVisibility(View.INVISIBLE);
                         break;
                     case 1:
-                        status.setImageResource(R.drawable.ic_dot2);
+                        imageView1.setVisibility(View.INVISIBLE);
+                        imageView2.setVisibility(View.VISIBLE);
+                        imageView3.setVisibility(View.INVISIBLE);
                         break;
                     case 2:
-                        status.setImageResource(R.drawable.ic_dot3);
+                        imageView1.setVisibility(View.INVISIBLE);
+                        imageView2.setVisibility(View.VISIBLE);
+                        imageView3.setVisibility(View.VISIBLE);
                         break;
+                    default:
+                        imageView1.setVisibility(View.INVISIBLE);
+                        imageView2.setVisibility(View.INVISIBLE);
+                        imageView3.setVisibility(View.INVISIBLE);
+                        break;
+
                 }
 
-            } else {
-                lView = fInflater.inflate(R.layout.chat_recieved, parent, false);
+                time.setText(messageChat.getDate());
 
-                chat_message = (TextView) lView.findViewById(R.id.msg_text);
+            } else {
+
+                lView = fInflater.inflate(R.layout.chat_recieved, parent, false);
+                TextView time = (TextView) lView.findViewById(R.id.user_reply_timing);
+
+                chat_message = (TextView) lView.findViewById(R.id.chat_user_reply);
                 chat_message.setText(messageChat.getMessage());
+
+                time.setText(messageChat.getDate());
             }
         }
 

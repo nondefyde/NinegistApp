@@ -1,194 +1,191 @@
-<zumma.com.ninegistapp.ui.Components.SizeNotifierRelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<zumma.com.ninegistapp.ui.Components.SizeNotifierRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/chat_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/chat_layout">
+    android:layout_height="match_parent">
 
     <zumma.com.ninegistapp.ui.Components.FrameLayoutFixed
-        android:layout_height="fill_parent"
+        android:id="@+id/empty_view"
         android:layout_width="fill_parent"
-        android:paddingBottom="48dp"
-        android:id="@+id/empty_view">
+        android:layout_height="fill_parent"
+        android:paddingBottom="48dp">
 
         <TextView
+            android:id="@+id/searchEmptyView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#ffffff"
+            android:layout_gravity="center"
             android:gravity="center"
-            android:paddingTop="2dp"
             android:paddingBottom="2dp"
             android:paddingLeft="7dp"
             android:paddingRight="7dp"
-            android:textSize="16dp"
-            android:id="@+id/searchEmptyView"
-            android:layout_gravity="center"/>
+            android:paddingTop="2dp"
+            android:textColor="#ffffff"
+            android:textSize="16dp" />
 
-        <include
-            layout="@layout/encrypted_chat_placeholder"/>
 
     </zumma.com.ninegistapp.ui.Components.FrameLayoutFixed>
 
     <zumma.com.ninegistapp.ui.Components.LayoutListView
+        android:id="@+id/chat_list_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/chat_list_view"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:clipToPadding="false"
-        android:layout_marginBottom="-3dp"
         android:layout_above="@+id/chat_compose_panel"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="-3dp"
+        android:background="@drawable/background_hd"
+        android:cacheColorHint="#00000000"
+        android:clipToPadding="false"
         android:divider="@null"
         android:dividerHeight="0dp"
-        android:listSelector="@android:color/transparent"
         android:fadingEdge="none"
         android:fadingEdgeLength="0dp"
-        android:stackFromBottom="true"
+        android:listSelector="@android:color/transparent"
         android:paddingBottom="3dp"
         android:paddingTop="4dp"
-        android:cacheColorHint="#00000000"/>
+        android:stackFromBottom="true" />
 
     <FrameLayout
+        android:id="@+id/progressLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:id="@+id/progressLayout"
         android:visibility="gone">
 
         <FrameLayout
             android:id="@+id/progressLayoutInner"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:gravity="center"
-            android:layout_marginBottom="48dp">
+            android:layout_marginBottom="48dp"
+            android:gravity="center">
 
             <ProgressBar
+                android:id="@+id/center_progress"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:id="@+id/center_progress"
-                android:indeterminateDrawable="@drawable/loading_animation"
-                android:indeterminate="true"
                 android:layout_gravity="center"
+                android:indeterminate="true"
                 android:indeterminateBehavior="repeat"
-                android:indeterminateDuration="1500">
-            </ProgressBar>
+                android:indeterminateDrawable="@drawable/loading_animation"
+                android:indeterminateDuration="1500"></ProgressBar>
 
         </FrameLayout>
 
     </FrameLayout>
 
     <LinearLayout
-        android:layout_height="wrap_content"
+        android:id="@+id/chat_compose_panel"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:background="@drawable/compose_panel"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:id="@+id/chat_compose_panel"
-        android:background="@drawable/compose_panel"
         android:orientation="horizontal">
 
         <zumma.com.ninegistapp.ui.Components.FrameLayoutFixed
-            android:layout_height="wrap_content"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1">
 
             <ImageView
-                android:src="@drawable/ic_msg_panel_smiles"
+                android:id="@+id/chat_smile_button"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginTop="2dp"
-                android:paddingTop="1dp"
-                android:paddingLeft="4dp"
-                android:scaleType="centerInside"
                 android:layout_gravity="bottom"
-                android:id="@+id/chat_smile_button"/>
+                android:layout_marginTop="2dp"
+                android:paddingLeft="4dp"
+                android:paddingTop="1dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_msg_panel_smiles" />
 
             <EditText
+                android:id="@+id/chat_text_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:id="@+id/chat_text_edit"
-                android:maxLines="4"
-                android:textSize="18dp"
-                android:textColorHint="#b2b2b2"
-                android:imeOptions="flagNoExtractUi"
-                android:inputType="textCapSentences|textMultiLine"
-                android:maxLength="16384"
-                android:gravity="bottom"
                 android:layout_marginLeft="52dp"
                 android:layout_marginRight="2dp"
                 android:background="@null"
+                android:gravity="bottom"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLength="16384"
+                android:maxLines="4"
                 android:paddingBottom="12dp"
                 android:paddingTop="11dp"
+                android:textColor="#000000"
+                android:textColorHint="#b2b2b2"
                 android:textCursorDrawable="@null"
-                android:textColor="#000000"/>
+                android:textSize="18dp" />
 
             <FrameLayout
+                android:id="@+id/chat_attach_button"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_gravity="bottom|right"
                 android:layout_marginTop="2dp"
-                android:id="@+id/chat_attach_button"
-                android:enabled="false"
-                android:layout_gravity="bottom|right"/>
+                android:enabled="false" />
 
             <zumma.com.ninegistapp.ui.Components.FrameLayoutFixed
-                android:layout_height="48dp"
-                android:layout_width="fill_parent"
-                android:layout_marginTop="2dp"
-                android:layout_gravity="bottom"
-                android:background="#ffffff"
                 android:id="@+id/record_panel"
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="2dp"
+                android:background="#ffffff"
                 android:visibility="gone">
 
                 <LinearLayout
-                    android:layout_height="wrap_content"
+                    android:id="@+id/slideText"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginLeft="30dp"
-                    android:orientation="horizontal"
-                    android:id="@+id/slideText">
+                    android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_height="wrap_content"
                         android:layout_width="wrap_content"
-                        android:src="@drawable/slidearrow"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginTop="1dp"/>
+                        android:layout_marginTop="1dp"
+                        android:src="@drawable/slidearrow" />
 
                     <TextView
+                        android:id="@+id/slideToCancelTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#999999"
-                        android:textSize="12dp"
+                        android:layout_gravity="center_vertical"
                         android:layout_marginLeft="6dp"
-                        android:id="@+id/slideToCancelTextView"
-                        android:layout_gravity="center_vertical"/>
+                        android:textColor="#999999"
+                        android:textSize="12dp" />
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:paddingLeft="13dp"
+                    android:background="#ffffffff"
                     android:orientation="horizontal"
-                    android:background="#ffffffff">
+                    android:paddingLeft="13dp">
 
                     <ImageView
-                        android:layout_height="wrap_content"
                         android:layout_width="wrap_content"
-                        android:src="@drawable/rec"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginTop="1dp"/>
+                        android:layout_marginTop="1dp"
+                        android:src="@drawable/rec" />
 
                     <TextView
+                        android:id="@+id/recording_time_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/recording_time_text"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="6dp"
                         android:text="00:00"
                         android:textColor="#4d4c4b"
-                        android:textSize="16dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="6dp"/>
+                        android:textSize="16dp" />
 
                 </LinearLayout>
 
@@ -203,75 +200,82 @@
             android:layout_marginTop="2dp">
 
             <!--<ImageButton-->
-                <!--android:layout_width="48dp"-->
-                <!--android:layout_height="48dp"-->
-                <!--android:scaleType="centerInside"-->
-                <!--android:id="@+id/chat_audio_send_button"-->
-                <!--android:enabled="false"-->
-                <!--android:src="@drawable/mic_button_states"-->
-                <!--android:paddingRight="4dp"-->
-                <!--android:background="@android:color/white"/>-->
+            <!--android:layout_width="48dp"-->
+            <!--android:layout_height="48dp"-->
+            <!--android:scaleType="centerInside"-->
+            <!--android:id="@+id/chat_audio_send_button"-->
+            <!--android:enabled="false"-->
+            <!--android:src="@drawable/mic_button_states"-->
+            <!--android:paddingRight="4dp"-->
+            <!--android:background="@android:color/white"/>-->
 
             <ImageButton
+                android:id="@+id/chat_send_button"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:scaleType="centerInside"
-                android:id="@+id/chat_send_button"
+                android:background="@android:color/transparent"
                 android:enabled="false"
-                android:src="@drawable/ic_send"
-                android:background="@android:color/transparent"/>
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_send" />
 
         </FrameLayout>
 
     </LinearLayout>
 
     <FrameLayout
-        android:layout_height="48dp"
+        android:id="@+id/bottom_overlay"
         android:layout_width="fill_parent"
+        android:layout_height="48dp"
         android:layout_alignParentBottom="true"
         android:background="#ffffff"
-        android:id="@+id/bottom_overlay"
-        android:visibility="gone"
+        android:clickable="true"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:clickable="true">
+        android:visibility="gone">
 
         <TextView
+            android:id="@+id/bottom_overlay_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/bottom_overlay_text"
+            android:layout_gravity="center"
             android:textColor="#7f7f7f"
-            android:textSize="16dp"
-            android:layout_gravity="center"/>
+            android:textSize="16dp" />
 
     </FrameLayout>
 
     <FrameLayout
-        android:layout_height="48dp"
+        android:id="@+id/bottom_overlay_chat"
         android:layout_width="fill_parent"
+        android:layout_height="48dp"
         android:layout_alignParentBottom="true"
         android:background="#fbfcfd"
-        android:id="@+id/bottom_overlay_chat"
         android:visibility="gone">
 
         <TextView
+            android:id="@+id/bottom_overlay_chat_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/bottom_overlay_chat_text"
-            android:textColor="#3e6fa1"
-            android:textSize="18dp"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:textSize="18dp" />
 
     </FrameLayout>
 
     <!--<ImageView-->
+        <!--android:id="@+id/floating_button"-->
         <!--android:layout_width="wrap_content"-->
         <!--android:layout_height="wrap_content"-->
-        <!--android:src="@drawable/pagedown"-->
-        <!--android:layout_above="@id/chat_compose_panel"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_marginRight="4dp"-->
-        <!--android:layout_marginBottom="4dp"-->
-        <!--android:id="@+id/pagedown_button"/>-->
+        <!--android:layout_gravity="bottom|right"-->
+        <!--android:layout_alignBottom="@+id/chat_list_view"-->
+        <!--android:src="@drawable/ic_compose" />-->
+
+    <!--<ImageView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:src="@drawable/pagedown"-->
+    <!--android:layout_above="@id/chat_compose_panel"-->
+    <!--android:layout_alignParentRight="true"-->
+    <!--android:layout_marginRight="4dp"-->
+    <!--android:layout_marginBottom="4dp"-->
+    <!--android:id="@+id/pagedown_button"/>-->
 
 </zumma.com.ninegistapp.ui.Components.SizeNotifierRelativeLayout>

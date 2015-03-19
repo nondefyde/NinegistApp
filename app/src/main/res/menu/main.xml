@@ -8,11 +8,11 @@
         android:showAsAction="always|collapseActionView"
         android:title="@string/menu_search" />
 
-    <item
-        android:id="@+id/menu_chat"
-        android:icon="@drawable/ic_chat"
-        android:showAsAction="always"
-        android:title="@string/all_matches" />
+    <!--<item-->
+        <!--android:id="@+id/menu_chat"-->
+        <!--android:icon="@drawable/ic_chat"-->
+        <!--android:showAsAction="always"-->
+        <!--android:title="@string/all_matches" />-->
 
     <item
         android:id="@+id/menu_edit"

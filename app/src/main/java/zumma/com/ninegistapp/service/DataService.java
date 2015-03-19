@@ -18,6 +18,7 @@ import zumma.com.ninegistapp.database.table.FriendTable;
 import zumma.com.ninegistapp.database.table.MessageTable;
 import zumma.com.ninegistapp.service.listeners.ChatListeners;
 import zumma.com.ninegistapp.service.listeners.FriendListener;
+import zumma.com.ninegistapp.service.listeners.TriggerListener;
 
 public class DataService extends Service {
 
@@ -27,10 +28,12 @@ public class DataService extends Service {
     private ChatListeners chatListener;
     private ParseUser mCurrentUser;
     private Firebase chatFirebase;
+    private TriggerListener triggerListener;
     private String user_id;
     private ArrayList<String> frList;
 
     private Firebase[] firebases;
+    private Firebase[] triggerArray;
 
     public DataService() {
 
@@ -48,6 +51,7 @@ public class DataService extends Service {
 
 //        friendListener = new FriendListener(this);
         chatListener = new ChatListeners(this);
+        triggerListener  = new TriggerListener(this);
 
         mCurrentUser = ParseUser.getCurrentUser();
         user_id = mCurrentUser.getObjectId();
@@ -56,7 +60,12 @@ public class DataService extends Service {
             for(String friendId : frList){
                 Firebase mFirebaseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(user_id).child("roasters").child("Chat").child(friendId);
                 mFirebaseRef.addChildEventListener(chatListener);
-                Log.d(TAG, "LISTENER ADDED TO PATH PATH : " + mFirebaseRef.getPath().toString());
+
+                Firebase trigers = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(friendId).child("triggers");
+                trigers.addChildEventListener(triggerListener);
+
+                Log.d(TAG, "LISTENER ADDED TO CHAT PATH : " + mFirebaseRef.getPath().toString());
+//                Log.d(TAG, "LISTENER ADDED TO TRIGGERS PATH : " + trigers.getPath().toString());
             }
         }
 
@@ -70,6 +79,7 @@ public class DataService extends Service {
 
         frList = getChatUser();
         firebases = new Firebase[frList.size()];
+        triggerArray = new Firebase[frList.size()];
 
     }
 
@@ -81,6 +91,10 @@ public class DataService extends Service {
             for(Firebase firebase : firebases){
                 firebase.removeEventListener(chatListener);
             }
+
+//            for (Firebase firebase : trigersArr){
+//                firebase.removeEventListener(triggerListener);
+//            }
         }
     }
 

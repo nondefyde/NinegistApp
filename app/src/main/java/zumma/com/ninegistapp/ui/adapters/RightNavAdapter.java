@@ -49,8 +49,3 @@ public class RightNavAdapter extends BaseAdapter {
         }
     }
 }
-
-/* Location:           C:\Users\Okafor\workspace\imate\iMate_dex2jar.jar
- * Qualified Name:     com.imate.ui.RightNavAdapter
- * JD-Core Version:    0.6.0
- */

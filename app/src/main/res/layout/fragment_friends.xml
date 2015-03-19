@@ -2,21 +2,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="zumma.com.ninegistapp.ui.activities.HomeActivity">
+    tools:context="zumma.com.ninegistapp.MainActivity">
+
 
     <ListView
+        android:id="@+id/list"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/list"
+        android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:background="@drawable/list_selected"
+        android:listSelector="@drawable/list_selector"
+        android:longClickable="true" />
 
-    <TextView android:id="@+id/empty"
-        android:gravity="center"
+    <TextView
+        android:id="@+id/empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/empty_friend_label"
         android:fontFamily="sans-serif-light"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
+        android:gravity="center"
+        android:text="@string/empty_friend_label"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>

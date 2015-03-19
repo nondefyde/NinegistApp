@@ -52,13 +52,13 @@ import zumma.com.ninegistapp.model.User;
 import zumma.com.ninegistapp.service.DataService;
 import zumma.com.ninegistapp.service.FriendsSearchService;
 import zumma.com.ninegistapp.service.classes.FriendsSearch;
+import zumma.com.ninegistapp.ui.activities.Profile;
 import zumma.com.ninegistapp.ui.adapters.LeftNavAdapter;
 import zumma.com.ninegistapp.ui.adapters.RightNavAdapter;
 import zumma.com.ninegistapp.ui.fragments.ChatFragment;
 import zumma.com.ninegistapp.ui.fragments.FindMatch;
 import zumma.com.ninegistapp.ui.fragments.FriendsFragment;
 import zumma.com.ninegistapp.ui.fragments.Match;
-import zumma.com.ninegistapp.ui.fragments.Profile;
 import zumma.com.ninegistapp.ui.fragments.Settings;
 
 /**
@@ -275,7 +275,8 @@ public class MainActivity extends CustomActivity
         else if (pos == -2)
         {
             title = "Profile";
-            f = new Profile();
+            Intent intent = new Intent(this, Profile.class);
+            startActivity(intent);
         }
         else if (pos == 0)
         {
@@ -392,13 +393,15 @@ public class MainActivity extends CustomActivity
 
         this.menu = menu;
 
-        if (drawerLayout.isDrawerOpen(drawerLeft)
-                || drawerLayout.isDrawerOpen(drawerRight))
-            menu.findItem(R.id.menu_chat).setVisible(false);
-        else if (drawerLayout.isDrawerOpen(drawerRight))
-            menu.findItem(R.id.menu_edit).setVisible(true);
+//        if (drawerLayout.isDrawerOpen(drawerLeft)
+//                || drawerLayout.isDrawerOpen(drawerRight))
+//            menu.findItem(R.id.menu_chat).setVisible(false);
+//        else if (drawerLayout.isDrawerOpen(drawerRight))
+//            menu.findItem(R.id.menu_edit).setVisible(true);
         if(isChat){
             menu.findItem(R.id.menu_search).setVisible(false);
+            menu.findItem(R.id.menu_edit).setVisible(true);
+
         }
 
         return true;
@@ -436,14 +439,15 @@ public class MainActivity extends CustomActivity
             return true;
         }
 
-        if (item.getItemId() == R.id.menu_chat)
-        {
-            drawerLayout.closeDrawer(drawerLeft);
-            if (!drawerLayout.isDrawerOpen(drawerRight))
-                drawerLayout.openDrawer(drawerRight);
-            else
-                drawerLayout.closeDrawer(drawerRight);
-        }
+//        if (item.getItemId() == R.id.menu_chat)
+//        {
+//            drawerLayout.closeDrawer(drawerLeft);
+//            if (!drawerLayout.isDrawerOpen(drawerRight))
+//                drawerLayout.openDrawer(drawerRight);
+//            else
+//                drawerLayout.closeDrawer(drawerRight);
+//        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -473,15 +477,17 @@ public class MainActivity extends CustomActivity
         if (isNetwork == true){
             Log.d(TAG, "network home available=" + isNetwork);
 
-            boolean search_flag = preferences.getBoolean(ParseConstants.FRIENDS_AVAILABLE, false);
-            if (search_flag == false){
-                Intent fiIntent = new Intent(this, FriendsSearchService.class);
-                startService(fiIntent);
-            }
+//            boolean search_flag = preferences.getBoolean(ParseConstants.NG_FRIENDS, false);
+//            if (search_flag == false){
+//
+//            }
 
-            Intent fiIntent = new Intent(this, DataService.class);
-            startService(fiIntent);
+            Intent fIntent = new Intent(this, FriendsSearchService.class);
+            startService(fIntent);
 
+
+            Intent intent = new Intent(this, DataService.class);
+            startService(intent);
         }else{
             Toast.makeText(this, "Cannot connect to the network...", Toast.LENGTH_LONG).show();
         }
