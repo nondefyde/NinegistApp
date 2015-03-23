@@ -41,14 +41,20 @@ public class ChatListeners implements ChildEventListener {
             HashMap<String, String> map = (HashMap<String, String>) dataSnapshot.getValue();
 
             MessageChat messageChat = dataSnapshot.getValue(MessageChat.class);
-            if (messageChat!= null && !messageChat.getFromId().equals(parseUser.getObjectId()) && messageChat.getReport() != 2){
-                Log.d(TAG, " onChildAdded 2 "+dataSnapshot.getValue() +"   "+s);
-                chatHelper.InsertChatMessage(messageChat.getFromId(),messageChat);
 
-            }else{
-                Log.d(TAG, " onChildAdded 3 "+dataSnapshot.getValue() +"   "+s);
+            Log.d(TAG, " onChildAdded 3 "+dataSnapshot.getValue() +"   "+s);
+            if (messageChat.getReport() == 2){
                 chatHelper.upDateFriendStatusChat(context,messageChat,1,4);
             }
+
+//
+//            if (messageChat!= null && !messageChat.getFromId().equals(parseUser.getObjectId()) && messageChat.getReport() == 0){
+//                Log.d(TAG, " onChildAdded 2 "+dataSnapshot.getValue() +"   "+s);
+//                chatHelper.InsertChatMessage(messageChat.getFromId(),messageChat);
+//
+//            }else{
+//
+//            }
         }
 
     }
@@ -56,6 +62,17 @@ public class ChatListeners implements ChildEventListener {
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
         Log.d(TAG, " onChildChanged "+dataSnapshot.getValue() +"   "+s);
+
+        if (dataSnapshot != null) {
+            HashMap<String, String> map = (HashMap<String, String>) dataSnapshot.getValue();
+
+            MessageChat messageChat = dataSnapshot.getValue(MessageChat.class);
+            if (messageChat!= null && !messageChat.getFromId().equals(parseUser.getObjectId()) && messageChat.getReport() == 1){
+                Log.d(TAG, " onChildAdded 2 "+dataSnapshot.getValue() +"   "+s);
+                chatHelper.InsertChatMessage(messageChat.getFromId(),messageChat);
+
+            }
+        }
 
     }
 

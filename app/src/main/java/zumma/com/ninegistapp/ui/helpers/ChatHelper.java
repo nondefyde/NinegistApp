@@ -2,8 +2,10 @@ package zumma.com.ninegistapp.ui.helpers;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.parse.ParseUser;
@@ -25,10 +27,12 @@ public class ChatHelper {
 
     private Context context;
     private ParseUser parseUser;
+    private SharedPreferences preferences;
 
     public ChatHelper(Context context) {
         this.context = context;
         parseUser =  ParseUser.getCurrentUser();
+        preferences =  PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     public void upDateDeliveredConversation(MessageChat conversation, ArrayList<MessageObject> messageObjects) {
@@ -67,12 +71,18 @@ public class ChatHelper {
             }
         }
         String SELECTION = MessageTable.COLUMN_FRIEND_ID + "=? AND " + MessageTable.COLUMN_CREATED_AT + "=?";
-        String[] args = {conversation.getToId(), conversation.getCreated_at() + ""};
-
         ContentValues values = new ContentValues();
         values.put(MessageTable.COLUMN_REPORT, 2);
 
-        int update = context.getContentResolver().update(MessageTable.CONTENT_URI, values, SELECTION, args);
+        int update = 0;
+        if (conversation.getToId().equals(parseUser.getObjectId())){
+            String[] args = {conversation.getFromId(), conversation.getCreated_at() + ""};
+            update = context.getContentResolver().update(MessageTable.CONTENT_URI, values, SELECTION, args);
+        }else{
+            String[] args = {conversation.getToId(), conversation.getCreated_at() + ""};
+            update = context.getContentResolver().update(MessageTable.CONTENT_URI, values, SELECTION, args);
+        }
+
         if (update > 0) {
             Log.d(TAG, " update displayed happened  " + update);
         }
@@ -116,7 +126,7 @@ public class ChatHelper {
                 String uniq = cursor.getString(indexUnique);
 
                 MessageChat messageChat = new MessageChat(fromId,toId,date,sent,flag,type,report,created,uniq,msg);
-//                Log.d(TAG, conversation.toString() );
+                Log.d(TAG, messageChat.toString() );
                 messageObjects.add(messageChat);
 
             } while (cursor.moveToNext());
@@ -151,9 +161,11 @@ public class ChatHelper {
 
             if (!messageObject.getFromId().equals(parseUser.getObjectId()) && messageObject.getReport() != 2){
                 upDateFriendListWithInComingChat(context,messageObject,1);
-                StaticMethods.sendChatNotification(context,messageObject.getMessage());
+                int p = preferences.getInt(messageObject.getFromId(),0);
+                if(p == 0){
+                    StaticMethods.sendChatNotification(context,messageObject.getMessage());
+                }
             }
-
         }
     }
 

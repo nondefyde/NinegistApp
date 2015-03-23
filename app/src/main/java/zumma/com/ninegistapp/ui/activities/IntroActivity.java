@@ -51,9 +51,9 @@ public class IntroActivity extends CustomActivity {
         setContentView(R.layout.intro_layout);
 
         icons = new int[] {
-                R.drawable.intro1,
-                R.drawable.intro2,
-                R.drawable.intro3
+                R.drawable.ic_intro1,
+                R.drawable.ic_intro2,
+                R.drawable.ic_intro3
         };
         titles = new int[] {
                 R.string.Page1Title,

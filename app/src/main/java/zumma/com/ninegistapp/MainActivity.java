@@ -29,8 +29,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ServerValue;
+import com.firebase.client.ValueEventListener;
 import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
 
@@ -49,10 +52,9 @@ import zumma.com.ninegistapp.model.Conversation;
 import zumma.com.ninegistapp.model.Data;
 import zumma.com.ninegistapp.model.Friend;
 import zumma.com.ninegistapp.model.User;
-import zumma.com.ninegistapp.service.DataService;
 import zumma.com.ninegistapp.service.FriendsSearchService;
 import zumma.com.ninegistapp.service.classes.FriendsSearch;
-import zumma.com.ninegistapp.ui.activities.Profile;
+import zumma.com.ninegistapp.ui.activities.SelectPicture;
 import zumma.com.ninegistapp.ui.adapters.LeftNavAdapter;
 import zumma.com.ninegistapp.ui.adapters.RightNavAdapter;
 import zumma.com.ninegistapp.ui.fragments.ChatFragment;
@@ -82,6 +84,11 @@ public class MainActivity extends CustomActivity
     /** The left navigation list adapter. */
     private LeftNavAdapter adapter;
     private ImageView iView;
+    private Firebase myConnectionsRef;
+    private Firebase lastOnline;
+    final Firebase connectedRef = new Firebase(ParseConstants.FIREBASE_URL + "/.info/connected");
+
+    private Bundle bundle;
 
     /* (non-Javadoc)
      * @see com.newsfeeder.custom.CustomActivity#onCreate(android.os.Bundle)
@@ -100,6 +107,30 @@ public class MainActivity extends CustomActivity
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         initUser();
+
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (connected) {
+                    // add this device to my connections list
+                    // this value could contain info about the device or a timestamp too
+                    myConnectionsRef.setValue(Boolean.TRUE);
+
+                    // when this device disconnects, remove it
+                    myConnectionsRef.onDisconnect().setValue(Boolean.FALSE);
+
+
+                    // when I disconnect, update the last time I was seen online
+                    lastOnline.onDisconnect().setValue(ServerValue.TIMESTAMP);
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError error) {
+                Log.d(TAG, "Listener was cancelled at .info/connected");
+            }
+        });
     }
 
     /**
@@ -264,6 +295,7 @@ public class MainActivity extends CustomActivity
      */
     public void launchFragment(int pos, Bundle bundle)
     {
+        this.bundle = bundle;
         isChat = false;
         Fragment f = null;
         String title = null;
@@ -275,7 +307,8 @@ public class MainActivity extends CustomActivity
         else if (pos == -2)
         {
             title = "Profile";
-            Intent intent = new Intent(this, Profile.class);
+            Intent intent = new Intent(this, SelectPicture.class);
+            intent.putExtra("data",bundle);
             startActivity(intent);
         }
         else if (pos == 0)
@@ -347,7 +380,6 @@ public class MainActivity extends CustomActivity
         getActionBar().setTitle(title);
         if (isChat)
         {
-            getActionBar().setSubtitle("Online");
             getActionBar().setIcon(R.drawable.user1);
         }
         else{
@@ -439,14 +471,10 @@ public class MainActivity extends CustomActivity
             return true;
         }
 
-//        if (item.getItemId() == R.id.menu_chat)
-//        {
-//            drawerLayout.closeDrawer(drawerLeft);
-//            if (!drawerLayout.isDrawerOpen(drawerRight))
-//                drawerLayout.openDrawer(drawerRight);
-//            else
-//                drawerLayout.closeDrawer(drawerRight);
-//        }
+        if (item.getItemId() == R.id.menu_edit)
+        {
+            return false;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -476,7 +504,7 @@ public class MainActivity extends CustomActivity
         boolean isNetwork = StaticMethods.haveNetworkConnection(this);
         if (isNetwork == true){
             Log.d(TAG, "network home available=" + isNetwork);
-
+//
 //            boolean search_flag = preferences.getBoolean(ParseConstants.NG_FRIENDS, false);
 //            if (search_flag == false){
 //
@@ -486,8 +514,6 @@ public class MainActivity extends CustomActivity
             startService(fIntent);
 
 
-            Intent intent = new Intent(this, DataService.class);
-            startService(intent);
         }else{
             Toast.makeText(this, "Cannot connect to the network...", Toast.LENGTH_LONG).show();
         }
@@ -498,11 +524,14 @@ public class MainActivity extends CustomActivity
         boolean user_created = preferences.getBoolean(ParseConstants.USER_CREATED,false);
 
         String user_id = ParseUser.getCurrentUser().getObjectId();
+        myConnectionsRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(user_id).child("basicInfo").child("connectionStatus");
+        lastOnline = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(user_id).child("basicInfo").child("lastOnline");
+
         if (!user_created){
 
             Firebase mFirebaseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(user_id);
 
-            BasicInfo info = new BasicInfo(ParseUser.getCurrentUser());
+            BasicInfo info = new BasicInfo(this,ParseUser.getCurrentUser());
 
             FriendsSearch friendsSearch = new FriendsSearch();
 
@@ -549,4 +578,11 @@ public class MainActivity extends CustomActivity
             preferences.edit().putBoolean(ParseConstants.USER_CREATED, true).apply();
         }
     }
+
+//    @Override
+//    public void viewProfile(String friend_id) {
+//        Intent intent = new Intent(this, ViewProfile.class);
+//        intent.putExtra("EXTRA_SESSION_ID", friend_id);
+//        startActivity(intent);
+//    }
 }

@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -60,7 +62,7 @@ public class FriendsFragment extends CustomFragment implements
 
     private static final int HIGHLIGHT_COLOR = 0x999be6ff;
 
-    protected AdapterView.OnItemClickListener mOnItemClickedListener = new AdapterView.OnItemClickListener() {
+    private AdapterView.OnItemClickListener mOnItemClickedListener = new AdapterView.OnItemClickListener() {
 
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             view.setSelected(true);
@@ -195,7 +197,6 @@ public class FriendsFragment extends CustomFragment implements
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-
 
 
     }
@@ -434,7 +435,6 @@ public class FriendsFragment extends CustomFragment implements
             itemLayout.setTag(viewHolder);
 
 
-
             return itemLayout;
         }
 
@@ -448,8 +448,7 @@ public class FriendsFragment extends CustomFragment implements
             final String status = cursor.getString(FriendQuery.COLUMN_STATUS);
             final int status_icon = cursor.getInt(FriendQuery.COLUMN_STATUS_ICON);
             final int msg_count = cursor.getInt(FriendQuery.COLUMN_MSG_COUNT);
-            final String last_chat_time = cursor.getString(FriendQuery.COLUMN_LAST_CHAT_TIME);
-            final int profile_pics = cursor.getInt(FriendQuery.COLUMN_STATUS_ICON);
+            final byte[] profile_pics = cursor.getBlob(FriendQuery.COLUMN_PROFILE_PICTURE);
             final String updated_at = cursor.getString(FriendQuery.COLUMN_UPDATED_AT);
 
             final int startIndex = indexOfSearchQuery(username);
@@ -531,7 +530,7 @@ public class FriendsFragment extends CustomFragment implements
 
             ListData data = new ListData(id);
             // provide support for selected state
-            updateCheckedState(viewHolder, data);
+            updateCheckedState(viewHolder, data, profile_pics);
 //            viewHolder.nameIcon.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View v) {
@@ -545,16 +544,20 @@ public class FriendsFragment extends CustomFragment implements
 
         }
 
-        private void updateCheckedState(ViewHolder holder, ListData item) {
+        private void updateCheckedState(ViewHolder holder, ListData item, byte[] image) {
             if (item.isChecked) {
                 holder.nameIcon.setImageDrawable(mDrawableBuilder.build(" ", 0xff616161));
                 holder.view.setBackgroundColor(HIGHLIGHT_COLOR);
                 holder.check_icon.setVisibility(View.VISIBLE);
-            }
-            else {
-                TextDrawable drawable = mDrawableBuilder.build(String.valueOf(item.data.toUpperCase().charAt(0)), mColorGenerator.getColor(item.data));
-                holder.nameIcon.setImageDrawable(drawable);
-                holder.view.setBackgroundColor(Color.TRANSPARENT);
+            } else {
+                if (image == null){
+                    TextDrawable drawable = mDrawableBuilder.build(String.valueOf(item.data.toUpperCase().charAt(0)), mColorGenerator.getColor(item.data));
+                    holder.nameIcon.setImageDrawable(drawable);
+                    holder.view.setBackgroundColor(Color.TRANSPARENT);
+                }else{
+                    Bitmap byteImage = BitmapFactory.decodeByteArray(image, 0, image.length);
+                    holder.nameIcon.setImageBitmap(byteImage);
+                }
                 holder.check_icon.setVisibility(View.GONE);
             }
         }

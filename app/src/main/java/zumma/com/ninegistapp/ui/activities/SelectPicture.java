@@ -60,32 +60,35 @@ public class SelectPicture extends Activity implements View.OnClickListener {
     private Firebase status_base;
     private Firebase home_base;
 
-    public static String TRIGGERS = "triggers";
-    public static String STATUS_TRIGGER = "status_trigger";
-    public static String IMAGE_TRIGGER = "image_trigger";
-    private int stat;
-    private int img;
+//    public static String TRIGGERS = "triggers";
+//    public static String STATUS_TRIGGER = "status_trigger";
+//    public static String IMAGE_TRIGGER = "image_trigger";
+//    private int stat;
+//    private int img;
+
+    private boolean statusChanged;
+    private boolean imageChanged;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_picture);
 
-        if (getSharedPreferences(TRIGGERS, 0).getInt(STATUS_TRIGGER, -1) == -1) {
-            stat = 0;
-            getSharedPreferences(TRIGGERS, 0).edit().putInt(STATUS_TRIGGER, stat).commit();
-            Log.d(TAG, "Inside Preferences");
-        } else {
-            stat = getSharedPreferences(TRIGGERS, 0).getInt(STATUS_TRIGGER, -1);
-            Log.d(TAG, "Inside Else Preferences");
-        }
-
-        if (getSharedPreferences(TRIGGERS, 0).getInt(IMAGE_TRIGGER, -1) == -1) {
-            img = 0;
-            getSharedPreferences(TRIGGERS, 0).edit().putInt(IMAGE_TRIGGER, img).commit();
-        } else {
-            img = getSharedPreferences(TRIGGERS, 0).getInt(IMAGE_TRIGGER, -1);
-        }
+//        if (getSharedPreferences(TRIGGERS, 0).getInt(STATUS_TRIGGER, -1) == -1) {
+//            stat = 0;
+//            getSharedPreferences(TRIGGERS, 0).edit().putInt(STATUS_TRIGGER, stat).commit();
+//            Log.d(TAG, "Inside Preferences");
+//        } else {
+//            stat = getSharedPreferences(TRIGGERS, 0).getInt(STATUS_TRIGGER, -1);
+//            Log.d(TAG, "Inside Else Preferences");
+//        }
+//
+//        if (getSharedPreferences(TRIGGERS, 0).getInt(IMAGE_TRIGGER, -1) == -1) {
+//            img = 0;
+//            getSharedPreferences(TRIGGERS, 0).edit().putInt(IMAGE_TRIGGER, img).commit();
+//        } else {
+//            img = getSharedPreferences(TRIGGERS, 0).getInt(IMAGE_TRIGGER, -1);
+//        }
 
         firebase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(ParseUser.getCurrentUser().getObjectId()).child("basicInfo").child("picture");
         status_base = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(ParseUser.getCurrentUser().getObjectId()).child("basicInfo").child("status");
@@ -106,9 +109,11 @@ public class SelectPicture extends Activity implements View.OnClickListener {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, dataSnapshot.toString() + " -onChildAdded");
-                String status = dataSnapshot.getValue().toString();
-                if (!status.equals("")) {
-                    statusUpdate.setText(status);
+                if(dataSnapshot.getValue() != null) {
+                    String status = dataSnapshot.getValue().toString();
+                    if (!status.equals("")) {
+                        statusUpdate.setText(status);
+                    }
                 }
             }
 
@@ -255,6 +260,8 @@ public class SelectPicture extends Activity implements View.OnClickListener {
     }
 
     private void updatePhoto() {
+        statusChanged = false;
+        imageChanged = false;
         if (imageSelected || statusUpdate.getText().toString().trim().length() > 0) {
             if (statusUpdate.getText().toString().trim().length() > 0) {
                 status = statusUpdate.getText().toString();
@@ -264,10 +271,13 @@ public class SelectPicture extends Activity implements View.OnClickListener {
                         if (firebaseError != null) {
                             Log.d(TAG, "Data could not be saved. " + firebaseError.getMessage());
                         } else {
-                            stat++;
-                            home_base.child("statusTrigger").setValue(stat);
-                            getSharedPreferences(TRIGGERS, 0).edit().putInt(STATUS_TRIGGER, stat).commit();
-                            Log.d(TAG, "Inside else of "+ stat);
+                            Log.d(TAG, "Status Changed");
+                            statusChanged = true;
+                            //updateTriggers();
+                            //stat++;
+                            //home_base.child("statusTrigger").setValue(stat);
+                            //getSharedPreferences(TRIGGERS, 0).edit().putInt(STATUS_TRIGGER, stat).commit();
+                            //Log.d(TAG, "Inside else of "+ stat);
                         }
                     }
                 });
@@ -282,10 +292,12 @@ public class SelectPicture extends Activity implements View.OnClickListener {
                             Log.d(TAG, "Data could not be saved. " + firebaseError.getMessage());
 
                         } else {
-                            Log.d(TAG, "Inside else of onComplete ");
-                            img++;
-                            home_base.child("imageTrigger").setValue(img);
-                            getSharedPreferences(TRIGGERS, 0).edit().putInt(IMAGE_TRIGGER, img).commit();
+                            Log.d(TAG, "Image Changed");
+                            imageChanged = true;
+                            //updateTriggers();
+                            //img++;
+                            //home_base.child("imageTrigger").setValue(img);
+                            //getSharedPreferences(TRIGGERS, 0).edit().putInt(IMAGE_TRIGGER, img).commit();
                         }
                     }
                 });
@@ -296,6 +308,22 @@ public class SelectPicture extends Activity implements View.OnClickListener {
             Toast.makeText(this, "Select an image or click cancel to proceed with no image.", Toast.LENGTH_SHORT).show();
         }
     }
+
+/*    private void updateTriggers(){
+        Log.d(TAG, "imageChanged: " +imageChanged +"-- statusChanged: "+ statusChanged);
+        if(imageChanged && statusChanged){
+            home_base.setValue(1);
+            Log.d(TAG, "Image and Status Changed - Triggers");
+        }
+        if(imageChanged && !statusChanged){
+            home_base.setValue(2);
+            Log.d(TAG, "Image Changed - Triggers");
+        }
+        if(!imageChanged && statusChanged){
+            Log.d(TAG, "Status Changed - Triggers");
+            home_base.setValue(3);
+        }
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

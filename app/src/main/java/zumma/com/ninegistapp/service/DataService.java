@@ -47,54 +47,52 @@ public class DataService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Toast.makeText(this, "service started", Toast.LENGTH_LONG).show();
+
+        frList = getChatUser();
+        firebases = new Firebase[frList.size()];
+        triggerArray = new Firebase[frList.size()];
 
 //        friendListener = new FriendListener(this);
         chatListener = new ChatListeners(this);
-        triggerListener  = new TriggerListener(this);
+
 
         mCurrentUser = ParseUser.getCurrentUser();
         user_id = mCurrentUser.getObjectId();
+
+        Log.d(TAG, frList.toString()+" onStartCommand : " + user_id);
 
         if (frList.size() > 0){
             for(String friendId : frList){
                 Firebase mFirebaseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(user_id).child("roasters").child("Chat").child(friendId);
                 mFirebaseRef.addChildEventListener(chatListener);
 
-                Firebase trigers = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(friendId).child("triggers");
-                trigers.addChildEventListener(triggerListener);
+                Firebase img = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(friendId).child("basicInfo").child("picture");
+                triggerListener  = new TriggerListener(this, friendId);
+                img.addValueEventListener(triggerListener);
 
                 Log.d(TAG, "LISTENER ADDED TO CHAT PATH : " + mFirebaseRef.getPath().toString());
-//                Log.d(TAG, "LISTENER ADDED TO TRIGGERS PATH : " + trigers.getPath().toString());
+                Log.d(TAG, "LISTENER ADDED TO TRIGGERS PATH : " + img.getPath().toString());
             }
         }
+
+        Toast.makeText(this, "service started "+frList.toString(), Toast.LENGTH_LONG).show();
+
 
         return START_STICKY;
     }
 
 
     @Override
-    public void onCreate() {
-        Toast.makeText(this, "service started", Toast.LENGTH_LONG).show();
-
-        frList = getChatUser();
-        firebases = new Firebase[frList.size()];
-        triggerArray = new Firebase[frList.size()];
-
-    }
-
-    @Override
     public void onDestroy() {
         Toast.makeText(this, "service done", Toast.LENGTH_LONG).show();
-//
         if (firebases.length > 0){
             for(Firebase firebase : firebases){
                 firebase.removeEventListener(chatListener);
             }
 
-//            for (Firebase firebase : trigersArr){
-//                firebase.removeEventListener(triggerListener);
-//            }
+            for (Firebase firebase : triggerArray){
+                firebase.removeEventListener(triggerListener);
+            }
         }
     }
 
@@ -114,8 +112,6 @@ public class DataService extends Service {
 
             } while (cursor.moveToNext());
         }
-
-
         return users;
     }
 

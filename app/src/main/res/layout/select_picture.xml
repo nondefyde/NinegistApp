@@ -50,6 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/picture_image"
                 android:layout_centerHorizontal="true"
+                android:layout_margin="@dimen/pad_20dp"
                 android:padding="10dp"
                 android:hint="Status Update"
                 android:background="@drawable/profile_edit_text"/>

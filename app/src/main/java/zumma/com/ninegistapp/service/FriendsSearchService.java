@@ -108,7 +108,7 @@ public class FriendsSearchService extends Service {
                             if (cursor.getCount() == 0) {
                                 boolean inserted = FriendsSearch.insertFriend(getApplicationContext(), values);
                                 if (inserted) {
-                                    BasicInfo info = new BasicInfo(user);
+                                    BasicInfo info = new BasicInfo(getApplicationContext(),user);
                                     friendsArray.put(user.getObjectId(),info);
                                     roaster.put(user.getObjectId(),"a new Chat");
 
@@ -129,6 +129,8 @@ public class FriendsSearchService extends Service {
             }
 
 
+            Intent intent = new Intent(getApplicationContext(), DataService.class);
+            startService(intent);
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             preferences.edit().putBoolean(ParseConstants.NG_FRIENDS, true).apply();
