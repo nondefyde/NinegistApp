@@ -7,18 +7,21 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
+import zumma.com.ninegistapp.MainActivity;
 import zumma.com.ninegistapp.ParseConstants;
 import zumma.com.ninegistapp.R;
 import zumma.com.ninegistapp.database.table.FriendTable;
@@ -29,6 +32,9 @@ public class ViewProfile extends Activity {
     private String friend_id;
     private ImageView imageView;
     private TextView textView;
+
+    private boolean picture_exists;
+    private Bitmap bitmap;
 
     private static final String TAG = ViewProfile.class.getSimpleName();
 
@@ -60,10 +66,11 @@ public class ViewProfile extends Activity {
 
                     byte[] pic_byte = cursor.getBlob(indexProfilePics);
                     if (pic_byte != null){
-                        Bitmap byteImage = BitmapFactory.decodeByteArray(pic_byte, 0, pic_byte.length);
-                        if (byteImage != null) {
+                        bitmap = BitmapFactory.decodeByteArray(pic_byte, 0, pic_byte.length);
+                        if (bitmap != null) {
                             imageView.setImageDrawable(null);
-                            imageView.setImageBitmap(byteImage);
+                            imageView.setImageBitmap(bitmap);
+                            picture_exists = true;
                         }
                     }else{
                         Firebase picture_base = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(friend_id).child("basicInfo").child("picture");
@@ -74,11 +81,11 @@ public class ViewProfile extends Activity {
                                     Log.d(TAG, dataSnapshot.toString() + " -onChildAdded");
                                     String imageString = dataSnapshot.getValue().toString();
                                     byte[] decodedImage = Base64.decode(imageString, Base64.DEFAULT);
-                                    Bitmap byteImage = BitmapFactory.decodeByteArray(decodedImage, 0, decodedImage.length);
-                                    if (byteImage != null) {
+                                    bitmap = BitmapFactory.decodeByteArray(decodedImage, 0, decodedImage.length);
+                                    if (bitmap != null) {
                                         imageView.setImageDrawable(null);
-                                        imageView.setImageBitmap(byteImage);
-
+                                        imageView.setImageBitmap(bitmap);
+                                        picture_exists = true;
                                         ContentValues values = new ContentValues();
                                         values.put(FriendTable.COLUMN_PROFILE_PICTURE,decodedImage);
                                         int pics_inserted = getContentResolver().update(FriendTable.CONTENT_URI, values, SELECTION, args);
@@ -134,6 +141,18 @@ public class ViewProfile extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        if(item.getItemId() == R.id.share_view_profile){
+            if(picture_exists){
+                MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, friend_id, friend_id);
+                Toast.makeText(this, "Image saved", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Image Saved For: " + friend_id);
+                Intent intent = new Intent(ViewProfile.this, MainActivity.class);
+                startActivity(intent);
+            }
+            else{
+                Toast.makeText(this, "Your friend has no profile image", Toast.LENGTH_SHORT).show();
+            }
+        }
 
         return super.onOptionsItemSelected(item);
     }

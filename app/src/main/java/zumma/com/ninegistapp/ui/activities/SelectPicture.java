@@ -284,16 +284,25 @@ public class SelectPicture extends Activity implements View.OnClickListener {
             }
             if (imageSelected) {
                 byte[] ourByte = FileHelper.getByteArrayFromFile(this, outputCropUri);
-                String imageFile = Base64.encodeToString(ourByte, Base64.DEFAULT);
-                firebase.setValue(imageFile, new Firebase.CompletionListener() {
+                String image = Base64.encodeToString(ourByte, Base64.DEFAULT);
+                firebase.setValue(image, new Firebase.CompletionListener() {
                     @Override
                     public void onComplete(FirebaseError firebaseError, Firebase firebase) {
                         if (firebaseError != null) {
                             Log.d(TAG, "Data could not be saved. " + firebaseError.getMessage());
-
-                        } else {
-                            Log.d(TAG, "Image Changed");
-                            imageChanged = true;
+                        }
+                        else {
+                            try {
+                                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), outputCropUri);
+                                OutputStream os = new FileOutputStream(imageFile);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, os);
+                                os.flush();
+                                os.close();
+                                Log.d(TAG, "Image Changed");
+                                imageChanged = true;
+                            } catch (Exception e) {
+                                Log.d(TAG, "Exception Occurred! - " + e.getMessage());
+                            }
                             //updateTriggers();
                             //img++;
                             //home_base.child("imageTrigger").setValue(img);
@@ -375,13 +384,14 @@ public class SelectPicture extends Activity implements View.OnClickListener {
 //                .centerCrop()
 //                .into(imageView);
         try {
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), outputCropUri);
-            OutputStream os = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, os);
-            outputCropUri = Uri.fromFile(imageFile);
-            os.flush();
-            os.close();
+//            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), outputCropUri);
+//            OutputStream os = new FileOutputStream(imageFile);
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, os);
+//            outputCropUri = Uri.fromFile(imageFile);
+//            os.flush();
+//            os.close();
             //imageView.setImageDrawable(null);
+            outputCropUri = Uri.fromFile(imageFile);
             Picasso.with(SelectPicture.this)
                     .load(outputCropUri)
                     .placeholder(R.drawable.ic_contact_picture_180_holo_light)

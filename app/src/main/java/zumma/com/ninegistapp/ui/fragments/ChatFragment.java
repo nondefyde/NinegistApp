@@ -57,6 +57,10 @@ public class ChatFragment extends CustomFragment {
     private Firebase connectionStatus;
     private Firebase lastSeen;
     private boolean onlineStatus;
+    private boolean firebase_status = false;
+    private String status;
+    final Firebase connectedRef = new Firebase(ParseConstants.FIREBASE_URL + "/.info/connected");
+    private SetSubtitle mConnect;
 
     private ChatHelper chatHelper;
 
@@ -68,6 +72,9 @@ public class ChatFragment extends CustomFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Do something that differs the Activity's menu here
+        if(firebase_status){
+            mConnect.onSet(status);
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -85,6 +92,7 @@ public class ChatFragment extends CustomFragment {
     public void initChat() {
 
         chatHelper = new ChatHelper(getActivity());
+        mConnect = (SetSubtitle) getActivity();
 
         user_id = ParseUser.getCurrentUser().getObjectId();
         friend_id = getArguments().getString(ParseConstants.KEY_USER_ID);
@@ -99,10 +107,13 @@ public class ChatFragment extends CustomFragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getValue() == true){
                     onlineStatus = true;
-                    setUpSubtitle("Online");
+                    firebase_status = true;
+                    status = "Online";
+                    mConnect.onSet(status);
                 }
                 else{
                     onlineStatus = false;
+                    firebase_status = true;
                     lastSeen.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -114,12 +125,13 @@ public class ChatFragment extends CustomFragment {
                                     now + 1000,
                                     DateUtils.SECOND_IN_MILLIS
                             ).toString();
-                            setUpSubtitle("Last online: "+convertedDate);
+                            status = "Last online: "+convertedDate;
+                            mConnect.onSet(status);
                         }
 
                         @Override
                         public void onCancelled(FirebaseError firebaseError) {
-
+                            getActivity().getActionBar().setSubtitle(null);
                         }
                     });
                 }
@@ -139,15 +151,6 @@ public class ChatFragment extends CustomFragment {
 
         chatHelper.initChatList(friend_id, chatList);
         adapter = new ChatAdapter(getActivity(), chatList);
-    }
-
-    private void setUpSubtitle(String status){
-        if(onlineStatus){
-            getActivity().getActionBar().setSubtitle(status);
-        }
-        else{
-            getActivity().getActionBar().setSubtitle(status);
-        }
     }
 
     private void sendMessage() {
@@ -385,5 +388,9 @@ public class ChatFragment extends CustomFragment {
             cursor.close();
         }
 
+    }
+
+    public interface SetSubtitle{
+        void onSet(String status);
     }
 }

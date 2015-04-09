@@ -10,15 +10,14 @@
     <ImageView
         android:id="@+id/main_profile_image"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/user_img" />
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/textView1"
         android:layout_width="374dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/pad_5dp"
-        android:text="James Stevens"
+        android:text="@string/my_profile_header"
         android:textColor="@color/white"
         android:textSize="@dimen/txt_16sp"
         android:layout_gravity="center"

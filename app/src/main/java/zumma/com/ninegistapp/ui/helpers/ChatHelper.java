@@ -160,7 +160,7 @@ public class ChatHelper {
             }
 
             if (!messageObject.getFromId().equals(parseUser.getObjectId()) && messageObject.getReport() != 2){
-                upDateFriendListWithInComingChat(context,messageObject,1);
+                upDateFriendListWithInComingChat(context,messageObject,2);
                 int p = preferences.getInt(messageObject.getFromId(),0);
                 if(p == 0){
                     StaticMethods.sendChatNotification(context,messageObject.getMessage());

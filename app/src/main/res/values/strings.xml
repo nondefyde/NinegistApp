@@ -99,5 +99,6 @@
     <string name="title_activity_picture_test">PictureTest</string>
     <string name="title_activity_view_profile">View Profile</string>
     <string name="default_view_profile">-No Status-</string>
+    <string name="my_profile_header">My Profile</string>
 
 </resources>

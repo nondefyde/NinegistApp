@@ -86,6 +86,7 @@
     <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="aspectjrt-1.8.2" level="project" />
+    <orderEntry type="library" exported="" name="isoparser-1.0.6" level="project" />
     <orderEntry type="library" exported="" name="commons-io-2.4" level="project" />
     <orderEntry type="library" exported="" name="nineoldandroids-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-3.2.65" level="project" />
@@ -96,7 +97,6 @@
     <orderEntry type="library" exported="" name="firebase-client-android-2.2.0" level="project" />
     <orderEntry type="library" exported="" name="Parse-1.8.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-21.0.2" level="project" />
-    <orderEntry type="library" exported="" name="isoparser-1.0.5.4" level="project" />
     <orderEntry type="library" exported="" name="bolts-android-1.1.4" level="project" />
     <orderEntry type="library" exported="" name="android-crop-0.9.10" level="project" />
     <orderEntry type="library" exported="" name="HockeySDK-3.0.2" level="project" />

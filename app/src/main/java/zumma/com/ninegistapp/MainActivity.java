@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,6 +20,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -38,6 +41,8 @@ import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,7 +73,7 @@ import zumma.com.ninegistapp.ui.fragments.Settings;
  * activity is launched after the Login and it holds all the Fragments used in
  * the app. It also creates the Navigation Drawers on left and right side.
  */
-public class MainActivity extends CustomActivity
+public class MainActivity extends CustomActivity implements ChatFragment.SetSubtitle
 {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -209,8 +214,8 @@ public class MainActivity extends CustomActivity
     private void setUpHeaderImage(){
         final File root = new File(Environment.getExternalStorageDirectory() + File.separator + "9NineGist" + File.separator);
         if(root.exists()){
-            String imageFileName = "JPEG_" + "picture" + ".jpg";
-            File imageFile = new File(root, imageFileName);
+            final String imageFileName = "JPEG_" + "picture" + ".jpg";
+            final File imageFile = new File(root, imageFileName);
             if(imageFile.exists()){
                 iView.setImageDrawable(null);
                 Uri uri = Uri.fromFile(imageFile);
@@ -221,11 +226,118 @@ public class MainActivity extends CustomActivity
                         .placeholder(R.drawable.ic_contact_picture_180_holo_light)
                         .skipMemoryCache()
                         .into(iView);
+                Log.d(TAG, "Profile Folder Exists and Image Found");
+                return;
+            }
+            else{
+                Firebase firebase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(ParseUser.getCurrentUser().getObjectId()).child("basicInfo").child("picture");
+                firebase.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.getValue() != null) {
+                            String imageString = dataSnapshot.getValue().toString();
+                            byte[] decodedImage = Base64.decode(imageString, Base64.DEFAULT);
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(decodedImage, 0, decodedImage.length);
+                            if (bitmap != null) {
+                                try{
+                                    OutputStream os = new FileOutputStream(imageFile);
+                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, os);
+                                    os.flush();
+                                    os.close();
+                                    Uri uri = Uri.fromFile(imageFile);
+                                    Picasso.with(MainActivity.this)
+                                            .load(uri)
+                                            .resize(getResources().getInteger(R.integer.profile_width), getResources().getInteger(R.integer.profile_height))
+                                            .transform(new CircleTransform())
+                                            .placeholder(R.drawable.ic_contact_picture_180_holo_light)
+                                            .skipMemoryCache()
+                                            .into(iView);
+                                    Log.d(TAG, "Profile Folder Exists and Image Retrieved From Firebase and Saved to Folder");
+                                } catch (Exception e) {
+                                    Log.d(TAG, "Exception Occurred While Making Saving Image " + e.getMessage());
+                                }
+                                return;
+                            }
+                            else{
+                                Picasso.with(MainActivity.this)
+                                        .load(R.drawable.ic_contact_picture_180_holo_light)
+                                        .resize(getResources().getInteger(R.integer.profile_width), getResources().getInteger(R.integer.profile_height))
+                                        .transform(new CircleTransform())
+                                        .into(iView);
+                                Log.d(TAG, "Profile Folder Exists and No Picture in Folder or Online");
+                                return;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+                        Log.d(TAG, "OnCancelled "+ firebaseError.toString());
+                    }
+                });
             }
         }
         else{
-            return;
+            Firebase firebase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(ParseUser.getCurrentUser().getObjectId()).child("basicInfo").child("picture");
+            firebase.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.getValue() != null) {
+                        Log.d(TAG, dataSnapshot.toString() + " -onChildAdded");
+                        String imageString = dataSnapshot.getValue().toString();
+                        byte[] decodedImage = Base64.decode(imageString, Base64.DEFAULT);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(decodedImage, 0, decodedImage.length);
+                        if (bitmap != null) {
+                            final File root = new File(Environment.getExternalStorageDirectory() + File.separator + "9NineGist" + File.separator);
+                            if (root.mkdirs() || root.exists()) {
+                                //String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                                String imageFileName = "JPEG_" + "picture" + ".jpg";
+                                File imageFile = new File(root, imageFileName);
+                                try {
+                                    OutputStream os = new FileOutputStream(imageFile);
+                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, os);
+                                    os.flush();
+                                    os.close();
+                                    Uri uri = Uri.fromFile(imageFile);
+                                    Picasso.with(MainActivity.this)
+                                            .load(uri)
+                                            .resize(getResources().getInteger(R.integer.profile_width), getResources().getInteger(R.integer.profile_height))
+                                            .transform(new CircleTransform())
+                                            .placeholder(R.drawable.ic_contact_picture_180_holo_light)
+                                            .skipMemoryCache()
+                                            .into(iView);
+                                    Log.d(TAG, "Profile Folder Does Not Exist. Created and Image Retrieved");
+                                } catch (Exception e) {
+                                    Log.d(TAG, "Exception Occurred While Making Saving Image-2 " + e.getMessage());
+                                }
+                            }
+                            return;
+                        }
+                        else{
+                            Picasso.with(MainActivity.this)
+                                    .load(R.drawable.ic_contact_picture_180_holo_light)
+                                    .resize(getResources().getInteger(R.integer.profile_width), getResources().getInteger(R.integer.profile_height))
+                                    .transform(new CircleTransform())
+                                    .into(iView);
+                            Log.d(TAG, "No Profile Folder Found and No Online Profile Image");
+                            return;
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    Log.d(TAG, "OnCancelled "+ firebaseError.toString());
+
+                }
+            });
         }
+        Picasso.with(MainActivity.this)
+                .load(R.drawable.ic_contact_picture_180_holo_light)
+                .resize(getResources().getInteger(R.integer.profile_width), getResources().getInteger(R.integer.profile_height))
+                .transform(new CircleTransform())
+                .into(iView);
+        Log.d(TAG, "No Internet To Retrieve Profile Image and No Profile Folder Exists");
     }
 
     /**
@@ -576,6 +688,13 @@ public class MainActivity extends CustomActivity
             });
 
             preferences.edit().putBoolean(ParseConstants.USER_CREATED, true).apply();
+        }
+    }
+
+    @Override
+    public void onSet(String status) {
+        if(!drawerLayout.isDrawerOpen(drawerLeft)) {
+            getActionBar().setSubtitle(status);
         }
     }
 

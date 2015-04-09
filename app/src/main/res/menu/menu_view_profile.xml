@@ -1,4 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="zumma.com.ninegistapp.ui.activities.ViewProfile">
+
+    <item
+        android:id="@+id/share_view_profile"
+        android:icon="@drawable/ic_action_share"
+        android:showAsAction="always"
+        android:title="@string/edit"
+        android:visible="true" />
+
 </menu>
