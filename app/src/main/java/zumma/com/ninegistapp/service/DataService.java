@@ -112,6 +112,7 @@ public class DataService extends Service {
 
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return users;
     }
 

@@ -105,7 +105,7 @@ public class ChatFragment extends CustomFragment {
         connectionStatus.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getValue() == true){
+                if((boolean)dataSnapshot.getValue()){
                     onlineStatus = true;
                     firebase_status = true;
                     status = "Online";

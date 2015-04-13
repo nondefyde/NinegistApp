@@ -94,6 +94,7 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
     final Firebase connectedRef = new Firebase(ParseConstants.FIREBASE_URL + "/.info/connected");
 
     private Bundle bundle;
+    private boolean loaded;
 
     /* (non-Javadoc)
      * @see com.newsfeeder.custom.CustomActivity#onCreate(android.os.Bundle)
@@ -213,7 +214,9 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
 
     private void setUpHeaderImage(){
         final File root = new File(Environment.getExternalStorageDirectory() + File.separator + "9NineGist" + File.separator);
+        loaded = false;
         if(root.exists()){
+            Log.d(TAG, "Root Exists");
             final String imageFileName = "JPEG_" + "picture" + ".jpg";
             final File imageFile = new File(root, imageFileName);
             if(imageFile.exists()){
@@ -227,7 +230,7 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
                         .skipMemoryCache()
                         .into(iView);
                 Log.d(TAG, "Profile Folder Exists and Image Found");
-                return;
+                loaded = true;
             }
             else{
                 Firebase firebase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(ParseUser.getCurrentUser().getObjectId()).child("basicInfo").child("picture");
@@ -256,7 +259,7 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
                                 } catch (Exception e) {
                                     Log.d(TAG, "Exception Occurred While Making Saving Image " + e.getMessage());
                                 }
-                                return;
+                                loaded = true;
                             }
                             else{
                                 Picasso.with(MainActivity.this)
@@ -265,7 +268,7 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
                                         .transform(new CircleTransform())
                                         .into(iView);
                                 Log.d(TAG, "Profile Folder Exists and No Picture in Folder or Online");
-                                return;
+                                loaded = true;
                             }
                         }
                     }
@@ -278,12 +281,12 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
             }
         }
         else{
+            Log.d(TAG, "Root Does Not Exist");
             Firebase firebase = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(ParseUser.getCurrentUser().getObjectId()).child("basicInfo").child("picture");
             firebase.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if(dataSnapshot.getValue() != null) {
-                        Log.d(TAG, dataSnapshot.toString() + " -onChildAdded");
                         String imageString = dataSnapshot.getValue().toString();
                         byte[] decodedImage = Base64.decode(imageString, Base64.DEFAULT);
                         Bitmap bitmap = BitmapFactory.decodeByteArray(decodedImage, 0, decodedImage.length);
@@ -311,7 +314,7 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
                                     Log.d(TAG, "Exception Occurred While Making Saving Image-2 " + e.getMessage());
                                 }
                             }
-                            return;
+                            loaded = true;
                         }
                         else{
                             Picasso.with(MainActivity.this)
@@ -320,7 +323,7 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
                                     .transform(new CircleTransform())
                                     .into(iView);
                             Log.d(TAG, "No Profile Folder Found and No Online Profile Image");
-                            return;
+                            loaded = true;
                         }
                     }
                 }
@@ -332,12 +335,14 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
                 }
             });
         }
-        Picasso.with(MainActivity.this)
-                .load(R.drawable.ic_contact_picture_180_holo_light)
-                .resize(getResources().getInteger(R.integer.profile_width), getResources().getInteger(R.integer.profile_height))
-                .transform(new CircleTransform())
-                .into(iView);
-        Log.d(TAG, "No Internet To Retrieve Profile Image and No Profile Folder Exists");
+        if(!loaded) {
+            Picasso.with(MainActivity.this)
+                    .load(R.drawable.ic_contact_picture_180_holo_light)
+                    .resize(getResources().getInteger(R.integer.profile_width), getResources().getInteger(R.integer.profile_height))
+                    .transform(new CircleTransform())
+                    .into(iView);
+            Log.d(TAG, "No Internet/Picture To Retrieve and No Profile Folder Exists");
+        }
     }
 
     /**
