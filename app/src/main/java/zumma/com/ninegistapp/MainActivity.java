@@ -66,7 +66,7 @@ import zumma.com.ninegistapp.ui.fragments.ChatFragment;
 import zumma.com.ninegistapp.ui.fragments.FindMatch;
 import zumma.com.ninegistapp.ui.fragments.FriendsFragment;
 import zumma.com.ninegistapp.ui.fragments.Match;
-import zumma.com.ninegistapp.ui.fragments.Settings;
+import zumma.com.ninegistapp.ui.fragments.SettingFragment;
 
 /**
  * The Class MainActivity is the base activity class of the application. This
@@ -101,6 +101,7 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
      */
     private Menu menu;
     private boolean isChat;
+    private boolean isSetting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -199,12 +200,18 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
             public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
                                     long arg3)
             {
-
                 drawerLayout.closeDrawers();
-
+                //drawerLeft.setSelection(pos);
                 Log.d(TAG, "am Position " + pos);
-                if (pos != 0)
-                    launchFragment(pos-1, null);
+                adapter.setSelection(pos-1);
+                if (pos != 0) {
+                    if(pos == 1) {
+                        launchFragment(pos - 1, null);
+                    }
+                    if(pos == 2) {
+                        launchFragment(pos, null);
+                    }
+                }
                 else
                     launchFragment(-2, null);
 
@@ -414,6 +421,7 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
     {
         this.bundle = bundle;
         isChat = false;
+        isSetting = false;
         Fragment f = null;
         String title = null;
         if (pos == -1)
@@ -446,8 +454,9 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
         else if (pos == 2)
         {
             title = "Settings";
-            f = new Settings();
-
+            isSetting = true;
+            f = new SettingFragment();
+//            f = new Settings();
         }
         else if (pos == 3)
         {
@@ -464,8 +473,8 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_frame, f).addToBackStack(title)
                     .commit();
-            if (adapter != null && pos >= 0)
-                adapter.setSelection(pos);
+            if (adapter != null && pos == 1)
+                adapter.setSelection(-1);
             setActionBarTitle();
             invalidateOptionsMenu();
         }
@@ -550,7 +559,9 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
         if(isChat){
             menu.findItem(R.id.menu_search).setVisible(false);
             menu.findItem(R.id.menu_edit).setVisible(true);
-
+        }
+        if(isSetting){
+            menu.findItem(R.id.menu_search).setVisible(false);
         }
 
         return true;

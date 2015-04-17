@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <declare-styleable name="JazzyViewPager">
         <attr name="style">
             <enum name="standard" value="0" />
@@ -18,6 +19,10 @@
         <attr name="fadeEnabled" format="boolean" />
         <attr name="outlineEnabled" format="boolean" />
         <attr name="outlineColor" format="color|reference" />
+    </declare-styleable>
+    <declare-styleable name="ButtonBarContainerTheme">
+        <attr name="metaButtonBarStyle" format="reference" />
+        <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
 
 </resources>
