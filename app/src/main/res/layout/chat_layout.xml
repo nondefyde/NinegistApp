@@ -1,4 +1,5 @@
 <zumma.com.ninegistapp.ui.Components.SizeNotifierRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
     android:id="@+id/chat_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -99,7 +100,7 @@
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_msg_panel_smiles" />
 
-            <EditText
+            <com.rockerhieu.emojicon.EmojiconEditText
                 android:id="@+id/chat_text_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -117,6 +118,7 @@
                 android:textColor="#000000"
                 android:textColorHint="#b2b2b2"
                 android:textCursorDrawable="@null"
+                emojicon:emojiconSize="18sp"
                 android:textSize="18dp" />
 
             <FrameLayout

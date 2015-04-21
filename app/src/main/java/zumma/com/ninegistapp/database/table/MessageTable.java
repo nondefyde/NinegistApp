@@ -2,6 +2,7 @@ package zumma.com.ninegistapp.database.table;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
+
 import java.util.HashMap;
 
 import zumma.com.ninegistapp.database.DataBaseProvider;

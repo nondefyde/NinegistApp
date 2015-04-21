@@ -32,7 +32,7 @@
             android:layout_alignBottom="@+id/chat_user_reply"
             android:textColor="@color/gray" />
 
-        <TextView
+        <com.rockerhieu.emojicon.EmojiconTextView
             android:id="@+id/chat_user_reply"
             style="@style/chat_text_message_style"
             android:autoLink="web"

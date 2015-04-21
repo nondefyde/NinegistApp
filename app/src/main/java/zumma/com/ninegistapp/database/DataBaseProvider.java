@@ -13,8 +13,8 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.List;
 
-import zumma.com.ninegistapp.database.table.MessageTable;
 import zumma.com.ninegistapp.database.table.FriendTable;
+import zumma.com.ninegistapp.database.table.MessageTable;
 
 /**
  * Created by Okafor on 22/05/2014.

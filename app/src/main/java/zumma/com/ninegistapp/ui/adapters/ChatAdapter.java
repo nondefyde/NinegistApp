@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.parse.ParseUser;
+import com.rockerhieu.emojicon.EmojiconTextView;
 
 import java.util.ArrayList;
 
@@ -56,13 +57,13 @@ public class ChatAdapter extends BaseAdapter {
 
         if (messageObject instanceof MessageChat){
             MessageChat messageChat = (MessageChat) messageObject;
-            TextView chat_message;
+            EmojiconTextView chat_message;
             if (messageObject.getFromId().equals(user_id)) {
 
                 lView = fInflater.inflate(R.layout.chat_sent, parent, false);
                 ImageView status = (ImageView) lView.findViewById(R.id.user_reply_status);
 
-                chat_message = (TextView) lView.findViewById(R.id.chat_user_reply);
+                chat_message = (EmojiconTextView) lView.findViewById(R.id.chat_user_reply);
                 chat_message.setText(messageChat.getMessage());
 
                 TextView time = (TextView) lView.findViewById(R.id.user_reply_timing);
@@ -104,7 +105,7 @@ public class ChatAdapter extends BaseAdapter {
                 lView = fInflater.inflate(R.layout.chat_recieved, parent, false);
                 TextView time = (TextView) lView.findViewById(R.id.user_reply_timing);
 
-                chat_message = (TextView) lView.findViewById(R.id.chat_user_reply);
+                chat_message = (EmojiconTextView) lView.findViewById(R.id.chat_user_reply);
                 chat_message.setText(messageChat.getMessage());
 
                 time.setText(messageChat.getDate());

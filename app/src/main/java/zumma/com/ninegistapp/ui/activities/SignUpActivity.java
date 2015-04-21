@@ -16,11 +16,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+
 import java.util.HashMap;
 import java.util.Random;
+
 import zumma.com.ninegistapp.ParseConstants;
 import zumma.com.ninegistapp.R;
 import zumma.com.ninegistapp.custom.CustomActivity;

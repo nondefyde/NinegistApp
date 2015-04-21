@@ -74,11 +74,13 @@ public class FriendsFragment extends CustomFragment implements
             final String objectId = cursor.getString(FriendQuery.COLUMN_ID);
             final String username = cursor.getString(FriendQuery.COLUMN_USERNAME);
             final String phone_number = cursor.getString(FriendQuery.COLUMN_PHONE_NUMBER);
+            final byte[] image = cursor.getBlob(FriendQuery.COLUMN_PROFILE_PICTURE);
 
             MainActivity mainActivity = (MainActivity) getActivity();
 
             Bundle bundle = new Bundle();
             bundle.putString(ParseConstants.KEY_USER_ID, objectId);
+            bundle.putByteArray(ParseConstants.KEY_PROFILE_IMAGE,image);
             bundle.putString(ParseConstants.ACTION_BAR_TITLE, /** "Chat with " + */username);
             mainActivity.launchFragment(1, bundle);
         }

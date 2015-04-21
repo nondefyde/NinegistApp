@@ -14,7 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
@@ -22,6 +22,8 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.parse.ParseUser;
+import com.rockerhieu.emojicon.EmojiKeyboard;
+import com.rockerhieu.emojicon.EmojiconEditText;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,7 +47,8 @@ public class ChatFragment extends CustomFragment {
 
     private static final String TAG = ChatFragment.class.getSimpleName();
     private ChatAdapter adapter;
-    private EditText txt;
+    private EmojiconEditText chat_text_edit;
+    ImageView chat_smile_button;
     private String user_id;
     private String friend_id;
     private UserChileEventListener userChileEventListener;
@@ -68,6 +71,9 @@ public class ChatFragment extends CustomFragment {
 
 
     ArrayList<MessageObject> chatList = new ArrayList<MessageObject>();
+
+
+    EmojiKeyboard emojiKeyboard;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -101,6 +107,7 @@ public class ChatFragment extends CustomFragment {
         friend_baseRef = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(friend_id).child("roasters").child("Chat").child(user_id);
         connectionStatus = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(friend_id).child("basicInfo").child("connectionStatus");
         lastSeen = new Firebase(ParseConstants.FIREBASE_URL).child("9Gist").child(friend_id).child("basicInfo").child("lastOnline");
+
 
         connectionStatus.addValueEventListener(new ValueEventListener() {
             @Override
@@ -155,12 +162,12 @@ public class ChatFragment extends CustomFragment {
 
     private void sendMessage() {
 
-        if (this.txt.length() == 0)
+        if (chat_text_edit.length() == 0)
             return;
 
         GDate date = new GDate();
 
-        String str = this.txt.getText().toString();
+        String str = chat_text_edit.getText().toString();
         String time = date.getCurrent_time();
 
         final MessageChat chatObject = new MessageChat(user_id, friend_id, time, true, 1, str);
@@ -170,7 +177,7 @@ public class ChatFragment extends CustomFragment {
         chatList.add(chatObject);
         adapter.notifyDataSetChanged();
         Log.d(TAG, chatObject.toString());
-        this.txt.setText(null);
+        chat_text_edit.setText(null);
 
 
         friend_baseRef.push().setValue(chatObject, new Firebase.CompletionListener() {
@@ -260,6 +267,11 @@ public class ChatFragment extends CustomFragment {
         }
     }
 
+    @Override
+    public void onPause() {
+        emojiKeyboard.dismissEmojiKeyboard();
+        super.onPause();
+    }
 
     @Override
     public void onDestroyView() {
@@ -284,8 +296,18 @@ public class ChatFragment extends CustomFragment {
         localListView.setTranscriptMode(2);
         localListView.setStackFromBottom(true);
 
-        this.txt = ((EditText) view.findViewById(R.id.chat_text_edit));
-        this.txt.setInputType(131073);
+        chat_text_edit = ((EmojiconEditText) view.findViewById(R.id.chat_text_edit));
+        chat_text_edit.setInputType(131073);
+
+        chat_smile_button = (ImageView) view.findViewById(R.id.chat_smile_button);
+        emojiKeyboard = new EmojiKeyboard(getActivity(), view);
+        chat_smile_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                emojiKeyboard.showEmoji();
+            }
+        });
+
         setTouchNClick(view.findViewById(R.id.chat_send_button));
 
         setHasOptionsMenu(true);
@@ -293,6 +315,9 @@ public class ChatFragment extends CustomFragment {
         super.onResume();
 
         sendMessageRead();
+
+
+
 
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         preferences.edit().putInt(friend_id,1).commit();
