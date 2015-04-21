@@ -11,6 +11,8 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -95,6 +97,7 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
 
     private Bundle bundle;
     private boolean loaded;
+    private byte[] image;
 
     /* (non-Javadoc)
      * @see com.newsfeeder.custom.CustomActivity#onCreate(android.os.Bundle)
@@ -446,6 +449,7 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
         else if (pos == 1)
         {
             title = bundle.getString(ParseConstants.ACTION_BAR_TITLE);
+            image = bundle.getByteArray(ParseConstants.KEY_PROFILE_IMAGE);
             isChat = true;
             f = new ChatFragment();
             f.setArguments(bundle);
@@ -506,7 +510,9 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
         getActionBar().setTitle(title);
         if (isChat)
         {
-            getActionBar().setIcon(R.drawable.user1);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+            Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+            getActionBar().setIcon(drawable);
         }
         else{
             try {

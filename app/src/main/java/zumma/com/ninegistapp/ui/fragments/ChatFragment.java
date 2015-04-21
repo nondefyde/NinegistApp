@@ -417,5 +417,6 @@ public class ChatFragment extends CustomFragment {
 
     public interface SetSubtitle{
         void onSet(String status);
+
     }
 }
