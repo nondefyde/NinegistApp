@@ -154,6 +154,10 @@ public class ViewProfile extends Activity {
             }
         }
 
+        if(item.getItemId() == android.R.id.home){
+            onBackPressed();
+        }
+
         return super.onOptionsItemSelected(item);
     }
 }

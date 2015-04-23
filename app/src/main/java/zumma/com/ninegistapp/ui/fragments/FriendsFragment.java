@@ -95,6 +95,7 @@ public class FriendsFragment extends CustomFragment implements
     private MenuItem sendMenu;
     private ListView listView;
     private String userId;
+    private CheckHome checkHome;
 
     // declare the color generator and drawable builder
     private ColorGenerator mColorGenerator = ColorGenerator.MATERIAL;
@@ -199,8 +200,8 @@ public class FriendsFragment extends CustomFragment implements
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-
-
+        checkHome = (CheckHome) getActivity();
+        checkHome.check();
     }
 
 
@@ -652,5 +653,9 @@ public class FriendsFragment extends CustomFragment implements
         public void setChecked(boolean isChecked) {
             this.isChecked = isChecked;
         }
+    }
+
+    public interface CheckHome{
+        void check();
     }
 }

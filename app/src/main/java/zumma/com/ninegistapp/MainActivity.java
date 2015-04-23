@@ -19,7 +19,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Base64;
@@ -75,7 +75,7 @@ import zumma.com.ninegistapp.ui.fragments.SettingFragment;
  * activity is launched after the Login and it holds all the Fragments used in
  * the app. It also creates the Navigation Drawers on left and right side.
  */
-public class MainActivity extends CustomActivity implements ChatFragment.SetSubtitle
+public class MainActivity extends CustomActivity implements ChatFragment.SetSubtitle, FriendsFragment.CheckHome
 {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -402,7 +402,7 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
     private void setupContainer()
     {
         getSupportFragmentManager().addOnBackStackChangedListener(
-                new OnBackStackChangedListener() {
+                new FragmentManager.OnBackStackChangedListener() {
 
                     @Override
                     public void onBackStackChanged()
@@ -470,12 +470,13 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
 
         if (f != null)
         {
-            while (getSupportFragmentManager().getBackStackEntryCount() > 0)
+            while (getSupportFragmentManager().getBackStackEntryCount() > 1)
             {
                 getSupportFragmentManager().popBackStackImmediate();
             }
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_frame, f).addToBackStack(title)
+                    .replace(R.id.content_frame, f)
+                    .addToBackStack(title)
                     .commit();
             if (adapter != null && pos == 1)
                 adapter.setSelection(-1);
@@ -508,7 +509,7 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
                 getSupportFragmentManager().getBackStackEntryCount() - 1)
                 .getName();
         getActionBar().setTitle(title);
-        if (isChat)
+        if (isChat && image != null && !title.equals("Home"))
         {
             Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
             Drawable drawable = new BitmapDrawable(getResources(), bitmap);
@@ -517,6 +518,7 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
         else{
             try {
                 getActionBar().setIcon(getPackageManager().getApplicationIcon("zumma.com.ninegistapp"));
+                getActionBar().setSubtitle(null);
             } catch (PackageManager.NameNotFoundException e) {
                 Log.d(TAG, "Package Name Not Found");
             }
@@ -718,6 +720,11 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
         if(!drawerLayout.isDrawerOpen(drawerLeft)) {
             getActionBar().setSubtitle(status);
         }
+    }
+
+    @Override
+    public void check() {
+        adapter.setSelection(0);
     }
 
 //    @Override
