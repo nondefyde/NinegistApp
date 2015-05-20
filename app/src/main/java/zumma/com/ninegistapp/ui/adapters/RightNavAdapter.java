@@ -1,6 +1,8 @@
 package zumma.com.ninegistapp.ui.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,18 +36,25 @@ public class RightNavAdapter extends BaseAdapter {
         return paramInt;
     }
 
-    public View getView(int paramInt, View paramView, ViewGroup paramViewGroup) {
-        if (paramView == null)
-            paramView = LayoutInflater.from(this.context).inflate(R.layout.right_nav_item, null);
+    public View getView(int paramInt, View view, ViewGroup paramViewGroup) {
+        if (view == null)
+            view = LayoutInflater.from(this.context).inflate(R.layout.right_nav_item, null);
         Data localData = getItem(paramInt);
-        ((TextView) paramView.findViewById(R.id.lbl1)).setText(localData.getTitle());
-        TextView localTextView = (TextView) paramView.findViewById(R.id.lbl2);
-        if ((paramInt + 1) % 3 == 0) ;
-        for (int i = 0; ; i = 8) {
-            localTextView.setVisibility(View.VISIBLE);
-            localTextView.setText(localData.getDesc());
-            ((ImageView) paramView.findViewById(R.id.img)).setImageResource(localData.getImage());
-            return paramView;
+
+        TextView name = (TextView) view.findViewById(R.id.lbl1);
+        ImageView picture = (ImageView) view.findViewById(R.id.img);
+        TextView msg_count = (TextView) view.findViewById(R.id.lbl2);
+
+        if(localData.getMes_count() > 0){
+            msg_count.setVisibility(View.VISIBLE);
+            msg_count.setText(localData.getMes_count());
         }
+
+        Bitmap byteImage = BitmapFactory.decodeByteArray(localData.getImage(), 0, localData.getImage().length);
+        picture.setImageBitmap(byteImage);
+
+        name.setText(localData.getTitle());
+
+        return view;
     }
 }

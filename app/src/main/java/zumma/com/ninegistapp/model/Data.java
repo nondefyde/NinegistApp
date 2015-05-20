@@ -1,26 +1,30 @@
 package zumma.com.ninegistapp.model;
 
 public class Data {
-    private String desc;
-    private int image;
+    private byte[] image;
     private String title;
+    private int mes_count;
 
-    public Data(String paramString, int paramInt) {
-        this.title = paramString;
-        this.image = paramInt;
+    public Data(String title, byte[] profile_pics) {
+        this.title = title;
+        this.image = profile_pics;
     }
 
-    public Data(String paramString1, String paramString2, int paramInt) {
-        this.title = paramString1;
-        this.desc = paramString2;
-        this.image = paramInt;
+    public Data(String title, int mes_count, byte[] profile_pics) {
+        this.title = title;
+        this.mes_count = mes_count;
+        this.image = profile_pics;
     }
 
-    public String getDesc() {
-        return this.desc;
+    public int getMes_count() {
+        return mes_count;
     }
 
-    public int getImage() {
+    public void setMes_count(int mes_count) {
+        this.mes_count = mes_count;
+    }
+
+    public byte[] getImage() {
         return this.image;
     }
 
@@ -28,16 +32,13 @@ public class Data {
         return this.title;
     }
 
-    public void setDesc(String paramString) {
-        this.desc = paramString;
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 
-    public void setImage(int paramInt) {
-        this.image = paramInt;
-    }
-
-    public void setTitle(String paramString) {
-        this.title = paramString;
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
 

@@ -1,6 +1,5 @@
 package zumma.com.ninegistapp.ui.fragments;
 
-
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -618,7 +617,6 @@ public class FriendsFragment extends CustomFragment implements
             return mAlphabetIndexer.getSectionForPosition(i);
         }
 
-
         /**
          * A class that defines fields for each resource ID in the list item layout. This allows
          * ContactsAdapter.newView() to store the IDs once, when it inflates the layout, instead of
@@ -636,8 +634,6 @@ public class FriendsFragment extends CustomFragment implements
             ImageView statusIcon;
             ImageView check_icon;
         }
-
-
     }
 
     private static class ListData {

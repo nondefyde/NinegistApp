@@ -201,21 +201,19 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
-                                    long arg3)
-            {
+                                    long arg3) {
                 drawerLayout.closeDrawers();
                 //drawerLeft.setSelection(pos);
                 Log.d(TAG, "am Position " + pos);
-                adapter.setSelection(pos-1);
+                adapter.setSelection(pos - 1);
                 if (pos != 0) {
-                    if(pos == 1) {
+                    if (pos == 1) {
                         launchFragment(pos - 1, null);
                     }
-                    if(pos == 2) {
+                    if (pos == 2) {
                         launchFragment(pos, null);
                     }
-                }
-                else
+                } else
                     launchFragment(-2, null);
 
             }
@@ -369,17 +367,26 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
         header.setClickable(true);
         drawerRight.addHeaderView(header);
 
-        ArrayList<Data> al = new ArrayList<Data>();
-        al.add(new Data("Emely", R.drawable.img_f1));
-        al.add(new Data("John", R.drawable.img_f2));
-        al.add(new Data("Aaliyah", R.drawable.img_f3));
-        al.add(new Data("Valentina", R.drawable.img_f4));
-        al.add(new Data("Barbara", R.drawable.img_f5));
 
-        ArrayList<Data> al1 = new ArrayList<Data>(al);
-        al1.addAll(al);
-        al1.addAll(al);
-        al1.addAll(al);
+        Cursor cursor = getContentResolver().query(FriendTable.CONTENT_URI, null, null, null, null);
+
+        ArrayList<Data> al = new ArrayList<Data>();
+        if (cursor != null && cursor.getCount() > 0) {
+            int indexID = cursor.getColumnIndex(FriendTable.COLUMN_ID);
+            int indexName = cursor.getColumnIndex(FriendTable.COLUMN_USERNAME);
+            int indexPics = cursor.getColumnIndex(FriendTable.COLUMN_PROFILE_PICTURE);
+            int msgCountIndex = cursor.getColumnIndex(FriendTable.COLUMN_MSG_COUNT);
+            cursor.moveToFirst();
+            do {
+                String id = cursor.getString(indexID);
+                String name = cursor.getString(indexName);
+                int msg_count = cursor.getInt(msgCountIndex);
+                byte[] profile_pics = cursor.getBlob(indexPics);
+                Log.d(TAG, "setupRightNavDrawer name "+name);
+                al.add(new Data(name,msg_count,profile_pics));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
 
         drawerRight.setOnItemClickListener(new OnItemClickListener() {
 
@@ -391,7 +398,9 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
                 launchFragment(1, null);
             }
         });
-        drawerRight.setAdapter(new RightNavAdapter(this, al1));
+        drawerRight.setAdapter(new RightNavAdapter(this, al));
+
+        Log.d(TAG, "setupRightNavDrawer here");
     }
 
     /**
@@ -559,14 +568,15 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
 
         this.menu = menu;
 
-//        if (drawerLayout.isDrawerOpen(drawerLeft)
-//                || drawerLayout.isDrawerOpen(drawerRight))
-//            menu.findItem(R.id.menu_chat).setVisible(false);
-//        else if (drawerLayout.isDrawerOpen(drawerRight))
-//            menu.findItem(R.id.menu_edit).setVisible(true);
+        if (drawerLayout.isDrawerOpen(drawerLeft)
+                || drawerLayout.isDrawerOpen(drawerRight))
+            menu.findItem(R.id.menu_chat).setVisible(false);
+        else if (drawerLayout.isDrawerOpen(drawerRight))
+            menu.findItem(R.id.menu_edit).setVisible(true);
         if(isChat){
             menu.findItem(R.id.menu_search).setVisible(false);
             menu.findItem(R.id.menu_edit).setVisible(true);
+            menu.findItem(R.id.menu_chat).setVisible(true);
         }
         if(isSetting){
             menu.findItem(R.id.menu_search).setVisible(false);

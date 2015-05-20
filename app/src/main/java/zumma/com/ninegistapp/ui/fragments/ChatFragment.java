@@ -1,9 +1,11 @@
 package zumma.com.ninegistapp.ui.fragments;
 
+import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
@@ -69,10 +71,7 @@ public class ChatFragment extends CustomFragment {
 
     public static final String FRIEND_ID_PROFILE = "friends_id_profile";
 
-
     ArrayList<MessageObject> chatList = new ArrayList<MessageObject>();
-
-
     EmojiKeyboard emojiKeyboard;
 
     @Override
@@ -122,6 +121,7 @@ public class ChatFragment extends CustomFragment {
                     onlineStatus = false;
                     firebase_status = true;
                     lastSeen.addValueEventListener(new ValueEventListener() {
+                        @TargetApi(Build.VERSION_CODES.CUPCAKE)
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             String last_online = dataSnapshot.getValue().toString();
@@ -136,6 +136,7 @@ public class ChatFragment extends CustomFragment {
                             mConnect.onSet(status);
                         }
 
+                        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
                         @Override
                         public void onCancelled(FirebaseError firebaseError) {
                             getActivity().getActionBar().setSubtitle(null);
