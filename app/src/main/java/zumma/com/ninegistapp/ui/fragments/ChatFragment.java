@@ -1,15 +1,23 @@
 package zumma.com.ninegistapp.ui.fragments;
 
 import android.annotation.TargetApi;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
@@ -30,9 +39,13 @@ import com.parse.ParseUser;
 import com.rockerhieu.emojicon.EmojiKeyboard;
 import com.rockerhieu.emojicon.EmojiconEditText;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import zumma.com.ninegistapp.ParseConstants;
 import zumma.com.ninegistapp.R;
@@ -46,11 +59,15 @@ import zumma.com.ninegistapp.ui.activities.ViewProfile;
 import zumma.com.ninegistapp.ui.adapters.ChatAdapter;
 import zumma.com.ninegistapp.ui.helpers.ChatHelper;
 import zumma.com.ninegistapp.ui.helpers.GDate;
+import zumma.com.ninegistapp.utils.FileHelper;
 
 public class ChatFragment extends CustomFragment implements View.OnClickListener {
 
 
     private static final String TAG = ChatFragment.class.getSimpleName();
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    private Uri cameraUri;
+
     private ChatAdapter adapter;
     private EmojiconEditText chat_text_edit;
     private ImageView chat_smile_button;
@@ -99,6 +116,9 @@ public class ChatFragment extends CustomFragment implements View.OnClickListener
             intent.putExtra(FRIEND_ID_PROFILE, friend_id);
             startActivity(intent);
             return true;
+        }
+        if (item.getItemId() == R.id.menu_chat) {
+            openImageIntent();
         }
         return false;
     }
@@ -479,4 +499,96 @@ public class ChatFragment extends CustomFragment implements View.OnClickListener
     public interface SetSubtitle{
         void onSet(String status);
     }
+
+    private void openImageIntent() {
+
+        File imageFile = null;
+        try {
+            imageFile = createImageFile();
+        } catch (IOException e) {
+            return;
+        }
+        cameraUri = Uri.fromFile(imageFile);
+
+        // Camera.
+        final List<Intent> cameraIntents = new ArrayList<>();
+        final Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        final PackageManager packageManager = getActivity().getPackageManager();
+        //Get All Packages/Apps that responds to camera intents
+        final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
+        //For each returned as ResolveInfo:
+        for (ResolveInfo res : listCam) {
+            final String packageName = res.activityInfo.packageName;
+            final Intent intent = new Intent(captureIntent);
+            intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+            intent.setPackage(packageName);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
+            cameraIntents.add(intent);
+        }
+
+        // Filesystem.
+        final Intent galleryIntent = new Intent();
+        galleryIntent.setType("image/*");
+        galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+
+        // Chooser of filesystem options.
+        final Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Source");
+
+        // Add the camera options.
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[cameraIntents.size()]));
+
+        startActivityForResult(chooserIntent, REQUEST_IMAGE_CAPTURE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_IMAGE_CAPTURE:
+                boolean isCamera;
+                if (resultCode == getActivity().RESULT_OK) {
+                    if (data == null) {
+                        isCamera = true;
+                    } else {
+                        final String action = data.getAction();
+                        if (action == null) {
+                            isCamera = false;
+                        } else {
+                            isCamera = action.equals(MediaStore.ACTION_IMAGE_CAPTURE);
+                        }
+                    }
+                    if (isCamera) {
+                        byte[] ourByte = FileHelper.getByteArrayFromFile(getActivity(), cameraUri);
+                        String baseString = Base64.encodeToString(ourByte, Base64.DEFAULT);
+                        Toast.makeText(getActivity(), baseString, Toast.LENGTH_LONG).show();
+                    } else {
+                        byte[] ourByte = FileHelper.getByteArrayFromFile(getActivity(), data.getData());
+                        String baseString = Base64.encodeToString(ourByte, Base64.DEFAULT);
+                        Toast.makeText(getActivity(), baseString, Toast.LENGTH_LONG).show();
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        //mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
+    }
+
 }
