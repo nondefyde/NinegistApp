@@ -10,7 +10,13 @@
 
     <item
         android:id="@+id/menu_chat"
-        android:icon="@drawable/ic_chat"
+        android:icon="@drawable/ic_action_add_person"
+        android:showAsAction="always"
+        android:title="@string/all_matches" />
+
+    <item
+        android:id="@+id/menu_picture"
+        android:icon="@android:drawable/ic_menu_camera"
         android:showAsAction="always"
         android:visible="false"
         android:title="@string/all_matches" />

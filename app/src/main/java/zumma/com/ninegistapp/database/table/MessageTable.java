@@ -26,6 +26,7 @@ public class MessageTable {
     public static final String COLUMN_FRIEND_ID = "friend_id";
     public static final String COLUMN_REPORT = "report";
     public static final String COLUMN_SENT = "sent";
+    public static final String COLUMN_TYPE = "type";
     public static final String COLUMN_PRIVATE = "private";
     public static final String COLUMN_TIME = "time";
     public static final String COLUMN_MESSAGE = "message";
@@ -43,6 +44,7 @@ public class MessageTable {
             + COLUMN_SENT + " INTEGER,"
             + COLUMN_MESSAGE_TYPE + " TEXT,"
             + COLUMN_PRIVATE + " INTEGER,"
+            + COLUMN_TYPE + " INTEGER,"
             + COLUMN_MESSAGE + " TEXT,"
             + COLUMN_TIME + " TEXT,"
             + COLUMN_CREATED_AT + " TEXT"

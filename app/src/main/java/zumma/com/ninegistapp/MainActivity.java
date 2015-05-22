@@ -56,14 +56,12 @@ import zumma.com.ninegistapp.database.table.FriendTable;
 import zumma.com.ninegistapp.model.BasicInfo;
 import zumma.com.ninegistapp.model.CircleTransform;
 import zumma.com.ninegistapp.model.Conversation;
-import zumma.com.ninegistapp.model.Data;
 import zumma.com.ninegistapp.model.Friend;
 import zumma.com.ninegistapp.model.User;
 import zumma.com.ninegistapp.service.FriendsSearchService;
 import zumma.com.ninegistapp.service.classes.FriendsSearch;
 import zumma.com.ninegistapp.ui.activities.SelectPicture;
 import zumma.com.ninegistapp.ui.adapters.LeftNavAdapter;
-import zumma.com.ninegistapp.ui.adapters.RightNavAdapter;
 import zumma.com.ninegistapp.ui.fragments.ChatFragment;
 import zumma.com.ninegistapp.ui.fragments.FindMatch;
 import zumma.com.ninegistapp.ui.fragments.FriendsFragment;
@@ -174,7 +172,7 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
         drawerLayout.closeDrawers();
 
         setupLeftNavDrawer();
-        setupRightNavDrawer();
+//        setupRightNavDrawer();
     }
 
     /**
@@ -358,50 +356,50 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
      * the contents to be displayed on the right side drawer. It will also setup
      * the Header contents of right drawer.
      */
-    private void setupRightNavDrawer()
-    {
-        drawerRight = (ListView) findViewById(R.id.right_drawer);
-
-        View header = getLayoutInflater().inflate(R.layout.rigth_nav_header,
-                null);
-        header.setClickable(true);
-        drawerRight.addHeaderView(header);
-
-
-        Cursor cursor = getContentResolver().query(FriendTable.CONTENT_URI, null, null, null, null);
-
-        ArrayList<Data> al = new ArrayList<Data>();
-        if (cursor != null && cursor.getCount() > 0) {
-            int indexID = cursor.getColumnIndex(FriendTable.COLUMN_ID);
-            int indexName = cursor.getColumnIndex(FriendTable.COLUMN_USERNAME);
-            int indexPics = cursor.getColumnIndex(FriendTable.COLUMN_PROFILE_PICTURE);
-            int msgCountIndex = cursor.getColumnIndex(FriendTable.COLUMN_MSG_COUNT);
-            cursor.moveToFirst();
-            do {
-                String id = cursor.getString(indexID);
-                String name = cursor.getString(indexName);
-                int msg_count = cursor.getInt(msgCountIndex);
-                byte[] profile_pics = cursor.getBlob(indexPics);
-                Log.d(TAG, "setupRightNavDrawer name "+name);
-                al.add(new Data(name,msg_count,profile_pics));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-
-        drawerRight.setOnItemClickListener(new OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id)
-            {
-                drawerLayout.closeDrawers();
-                launchFragment(1, null);
-            }
-        });
-        drawerRight.setAdapter(new RightNavAdapter(this, al));
-
-        Log.d(TAG, "setupRightNavDrawer here");
-    }
+//    private void setupRightNavDrawer()
+//    {
+//        drawerRight = (ListView) findViewById(R.id.right_drawer);
+//
+//        View header = getLayoutInflater().inflate(R.layout.rigth_nav_header,
+//                null);
+//        header.setClickable(true);
+//        drawerRight.addHeaderView(header);
+//
+//
+//        Cursor cursor = getContentResolver().query(FriendTable.CONTENT_URI, null, null, null, null);
+//
+//        ArrayList<Data> al = new ArrayList<Data>();
+//        if (cursor != null && cursor.getCount() > 0) {
+//            int indexID = cursor.getColumnIndex(FriendTable.COLUMN_ID);
+//            int indexName = cursor.getColumnIndex(FriendTable.COLUMN_USERNAME);
+//            int indexPics = cursor.getColumnIndex(FriendTable.COLUMN_PROFILE_PICTURE);
+//            int msgCountIndex = cursor.getColumnIndex(FriendTable.COLUMN_MSG_COUNT);
+//            cursor.moveToFirst();
+//            do {
+//                String id = cursor.getString(indexID);
+//                String name = cursor.getString(indexName);
+//                int msg_count = cursor.getInt(msgCountIndex);
+//                byte[] profile_pics = cursor.getBlob(indexPics);
+//                Log.d(TAG, "setupRightNavDrawer name "+name);
+//                al.add(new Data(name,msg_count,profile_pics));
+//            } while (cursor.moveToNext());
+//        }
+//        cursor.close();
+//
+//        drawerRight.setOnItemClickListener(new OnItemClickListener() {
+//
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view,
+//                                    int position, long id)
+//            {
+//                drawerLayout.closeDrawers();
+//                launchFragment(1, null);
+//            }
+//        });
+//        drawerRight.setAdapter(new RightNavAdapter(this, al));
+//
+//        Log.d(TAG, "setupRightNavDrawer here");
+//    }
 
     /**
      * Setup the container fragment for drawer layout. This method will setup
@@ -501,12 +499,6 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
     {
         if (drawerLayout.isDrawerOpen(drawerLeft))
         {
-            getActionBar().setTitle("Main Menu");
-            getActionBar().setSubtitle(null);
-            return;
-        }
-        if (drawerLayout.isDrawerOpen(drawerRight))
-        {
             getActionBar().setTitle(R.string.all_matches);
             getActionBar().setSubtitle(null);
             return;
@@ -532,7 +524,6 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
                 Log.d(TAG, "Package Name Not Found");
             }
         }
-        // getActionBar().setLogo(R.drawable.icon);
     }
 
     /* (non-Javadoc)
@@ -568,15 +559,13 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
 
         this.menu = menu;
 
-        if (drawerLayout.isDrawerOpen(drawerLeft)
-                || drawerLayout.isDrawerOpen(drawerRight))
+        if (drawerLayout.isDrawerOpen(drawerLeft))
             menu.findItem(R.id.menu_chat).setVisible(false);
-        else if (drawerLayout.isDrawerOpen(drawerRight))
-            menu.findItem(R.id.menu_edit).setVisible(true);
         if(isChat){
             menu.findItem(R.id.menu_search).setVisible(false);
-            menu.findItem(R.id.menu_edit).setVisible(true);
-            menu.findItem(R.id.menu_chat).setVisible(true);
+            menu.findItem(R.id.menu_edit).setVisible(false);
+        }else{
+            menu.findItem(R.id.menu_picture).setVisible(false);
         }
         if(isSetting){
             menu.findItem(R.id.menu_search).setVisible(false);
@@ -737,10 +726,4 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
         adapter.setSelection(0);
     }
 
-//    @Override
-//    public void viewProfile(String friend_id) {
-//        Intent intent = new Intent(this, ViewProfile.class);
-//        intent.putExtra("EXTRA_SESSION_ID", friend_id);
-//        startActivity(intent);
-//    }
 }

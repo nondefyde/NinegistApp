@@ -98,7 +98,19 @@
                 android:paddingLeft="4dp"
                 android:paddingTop="1dp"
                 android:scaleType="centerInside"
+                android:visibility="invisible"
                 android:src="@drawable/ic_msg_panel_smiles" />
+
+            <ImageView
+                android:id="@+id/chat_image_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="2dp"
+                android:paddingLeft="4dp"
+                android:paddingTop="1dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_attach_photo" />
 
             <com.rockerhieu.emojicon.EmojiconEditText
                 android:id="@+id/chat_text_edit"

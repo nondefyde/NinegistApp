@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.widget.ImageView;
 
 import com.firebase.client.ChildEventListener;
@@ -44,16 +47,22 @@ import zumma.com.ninegistapp.ui.adapters.ChatAdapter;
 import zumma.com.ninegistapp.ui.helpers.ChatHelper;
 import zumma.com.ninegistapp.ui.helpers.GDate;
 
-public class ChatFragment extends CustomFragment {
+public class ChatFragment extends CustomFragment implements View.OnClickListener {
 
 
     private static final String TAG = ChatFragment.class.getSimpleName();
     private ChatAdapter adapter;
     private EmojiconEditText chat_text_edit;
-    ImageView chat_smile_button;
+    private ImageView chat_smile_button;
+    private ImageView chat_image_button;
     private String user_id;
     private String friend_id;
     private UserChileEventListener userChileEventListener;
+
+
+
+    private boolean keyboardListenersAttached = false;
+    private ViewGroup rootLayout;
 
     private SharedPreferences preferences;
 
@@ -278,13 +287,23 @@ public class ChatFragment extends CustomFragment {
     public void onDestroyView() {
         super.onDestroyView();
         user_baseRef.removeEventListener(userChileEventListener);
+
+        if (keyboardListenersAttached) {
+            rootLayout.getViewTreeObserver().removeGlobalOnLayoutListener(keyboardLayoutListener);
+        }
     }
 
-    public void onClick(View paramView) {
-        super.onClick(paramView);
+    public void onClick(View view) {
+        super.onClick(view);
 
-        if (paramView.getId() == R.id.chat_send_button)
+        if (view.getId() == R.id.chat_send_button)
             sendMessage();
+        else if(view.getId() == R.id.chat_smile_button){
+            emojiKeyboard.showEmoji();
+        }
+        else if(view.getId() == R.id.chat_image_button){
+
+        }
     }
 
     public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle) {
@@ -301,13 +320,7 @@ public class ChatFragment extends CustomFragment {
         chat_text_edit.setInputType(131073);
 
         chat_smile_button = (ImageView) view.findViewById(R.id.chat_smile_button);
-        emojiKeyboard = new EmojiKeyboard(getActivity(), view);
-        chat_smile_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                emojiKeyboard.showEmoji();
-            }
-        });
+        chat_image_button = (ImageView) view.findViewById(R.id.chat_image_button);
 
         setTouchNClick(view.findViewById(R.id.chat_send_button));
 
@@ -317,11 +330,11 @@ public class ChatFragment extends CustomFragment {
 
         sendMessageRead();
 
-
-
-
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         preferences.edit().putInt(friend_id,1).commit();
+
+
+        attachKeyboardListeners(view);
 
         return view;
     }
@@ -414,6 +427,53 @@ public class ChatFragment extends CustomFragment {
             cursor.close();
         }
 
+    }
+
+    private ViewTreeObserver.OnGlobalLayoutListener keyboardLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            int heightDiff = rootLayout.getRootView().getHeight() - rootLayout.getHeight();
+            int contentViewTop = getActivity().getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
+
+            LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(getActivity());
+
+            if(heightDiff <= contentViewTop){
+                onHideKeyboard();
+
+                Intent intent = new Intent("KeyboardWillHide");
+                broadcastManager.sendBroadcast(intent);
+            } else {
+                int keyboardHeight = heightDiff - contentViewTop;
+                onShowKeyboard(keyboardHeight);
+
+                Intent intent = new Intent("KeyboardWillShow");
+                intent.putExtra("KeyboardHeight", keyboardHeight);
+                broadcastManager.sendBroadcast(intent);
+            }
+        }
+    };
+
+    protected void onShowKeyboard(int keyboardHeight) {
+        chat_smile_button.setVisibility(View.VISIBLE);
+        chat_image_button.setVisibility(View.INVISIBLE);
+        chat_smile_button.setOnClickListener(this);
+    }
+    protected void onHideKeyboard() {
+        chat_smile_button.setVisibility(View.INVISIBLE);
+        chat_image_button.setVisibility(View.VISIBLE);
+        chat_smile_button.setOnClickListener(null);
+    }
+
+    protected void attachKeyboardListeners(View view) {
+        emojiKeyboard = new EmojiKeyboard(getActivity(), view);
+        if (keyboardListenersAttached) {
+            return;
+        }
+
+        rootLayout = (ViewGroup) view.findViewById(R.id.chat_layout);
+        rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(keyboardLayoutListener);
+
+        keyboardListenersAttached = true;
     }
 
     public interface SetSubtitle{

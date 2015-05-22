@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentRight="true"
     android:layout_gravity="left"
@@ -13,35 +13,33 @@
     <RelativeLayout
         android:id="@+id/bubble_user"
         android:paddingRight="5dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="250dp"
+        android:layout_height="230dp"
         android:background="@drawable/msg_in"
         android:gravity="end"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+>
 
         <TextView
             android:id="@+id/user_reply_timing"
             style="@style/chat_timings"
             android:paddingBottom="5dp"
             android:text="17:10"
-            android:layout_alignParentRight="true"
-            android:layout_alignRight="@+id/chat_user_reply"
-            android:layout_alignBottom="@+id/chat_user_reply"
-            android:textColor="@color/gray" />
+            android:textColor="@color/gray"
+            android:layout_below="@+id/imageView4"
+            android:layout_alignLeft="@+id/imageView4"
+            android:layout_alignStart="@+id/imageView4"
+            android:layout_marginLeft="32dp"
+            android:layout_marginStart="32dp" />
 
-        <com.rockerhieu.emojicon.EmojiconTextView
-            android:id="@+id/chat_user_reply"
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
             style="@style/chat_text_message_style"
-            android:autoLink="web"
-            android:maxWidth="290dp"
-            android:text="Rahul Agrawal is a good boy but he does not know what he wants."
+            android:src="@drawable/ic_contact_picture_180_holo_light"
+            android:id="@+id/imageView4"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginLeft="20dp" />
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
 
