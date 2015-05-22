@@ -82,8 +82,6 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
     private DrawerLayout drawerLayout;
     /** ListView for left side drawer. */
     private ListView drawerLeft;
-    /** ListView for right side drawer. */
-    private ListView drawerRight;
     /** The drawer toggle. */
     private ActionBarDrawerToggle drawerToggle;
     /** The left navigation list adapter. */
@@ -594,15 +592,15 @@ public class MainActivity extends CustomActivity implements ChatFragment.SetSubt
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        if (item.getItemId() == android.R.id.home
-                && drawerLayout.isDrawerOpen(drawerRight))
-        {
-            drawerLayout.closeDrawer(drawerRight);
-            return true;
-        }
+//        if (item.getItemId() == android.R.id.home
+//                && drawerLayout.isDrawerOpen(drawerRight))
+//        {
+//            drawerLayout.closeDrawer(drawerRight);
+//            return true;
+//        }
         if (drawerToggle.onOptionsItemSelected(item))
         {
-            drawerLayout.closeDrawer(drawerRight);
+            //drawerLayout.closeDrawer(drawerRight);
             return true;
         }
 
